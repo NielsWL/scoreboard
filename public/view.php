@@ -69,6 +69,27 @@ function period_label(int $period): string
     return 'OT' . ($period - 4);
 }
 
+$homeFoulsTotal = array_sum(array_map(fn($player) => (int)$player['fouls'], $homePlayers));
+$awayFoulsTotal = array_sum(array_map(fn($player) => (int)$player['fouls'], $awayPlayers));
+$homeBaseline = 0;
+$awayBaseline = 0;
+for ($i = count($history) - 1; $i >= 0; $i -= 1) {
+    if (isset($history[$i]['fouls_home_total'])) {
+        $homeBaseline = (int)$history[$i]['fouls_home_total'];
+    }
+    if (isset($history[$i]['fouls_away_total'])) {
+        $awayBaseline = (int)$history[$i]['fouls_away_total'];
+    }
+    if ($homeBaseline !== 0 || $awayBaseline !== 0) {
+        break;
+    }
+}
+$teamFoulsHome = max(0, $homeFoulsTotal - $homeBaseline);
+$teamFoulsAway = max(0, $awayFoulsTotal - $awayBaseline);
+$halftimeScore = $entriesByPeriod[2] ?? null;
+$fulltimeScore = $entriesByPeriod[4] ?? null;
+$showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
+
 ?>
 <!doctype html>
 <html lang="de">
@@ -116,29 +137,51 @@ function period_label(int $period): string
                         </div>
                     </div>
                     <div class="period-block">
-                        <div class="period" data-period><?= e(period_label((int)$game['period'])) ?></div>
+                        <div class="period" data-period><?= $game['status'] === 'ended' ? 'Spielende' : e(period_label((int)$game['period'])) ?></div>
                     </div>
                     <div class="team-stats">
-                        <div>
+                        <div class="stat-block">
                             <h3>Teamfouls</h3>
-                            <div class="stat-row">
-                                <span><?= e($game['team_home']) ?></span>
-                                <strong data-team-fouls-home><?= (int)$game['team_fouls_home'] ?></strong>
-                            </div>
-                            <div class="stat-row">
-                                <span><?= e($game['team_away']) ?></span>
-                                <strong data-team-fouls-away><?= (int)$game['team_fouls_away'] ?></strong>
+                            <div class="stat-grid">
+                                <div class="stat-cell">
+                                    <span><?= e($game['team_home']) ?></span>
+                                    <strong data-team-fouls-home><?= $teamFoulsHome ?></strong>
+                                </div>
+                                <div class="stat-cell">
+                                    <span><?= e($game['team_away']) ?></span>
+                                    <strong data-team-fouls-away><?= $teamFoulsAway ?></strong>
+                                </div>
                             </div>
                         </div>
-                        <div>
+                        <div class="stat-block">
                             <h3>Timeouts</h3>
-                            <div class="stat-row">
-                                <span><?= e($game['team_home']) ?></span>
-                                <strong data-timeouts-home><?= (int)$game['timeouts_home'] ?></strong>
+                            <div class="stat-grid">
+                                <div class="stat-cell">
+                                    <span><?= e($game['team_home']) ?></span>
+                                    <strong data-timeouts-home><?= (int)$game['timeouts_home'] ?></strong>
+                                </div>
+                                <div class="stat-cell">
+                                    <span><?= e($game['team_away']) ?></span>
+                                    <strong data-timeouts-away><?= (int)$game['timeouts_away'] ?></strong>
+                                </div>
                             </div>
-                            <div class="stat-row">
-                                <span><?= e($game['team_away']) ?></span>
-                                <strong data-timeouts-away><?= (int)$game['timeouts_away'] ?></strong>
+                        </div>
+                    </div>
+                    <div class="half-summary">
+                        <div class="half-row">
+                            <span>Stand nach 1. Halbzeit</span>
+                            <div class="half-score">
+                                <strong data-halftime-home><?= $halftimeScore ? (int)$halftimeScore['home'] : '-' ?></strong>
+                                <span>:</span>
+                                <strong data-halftime-away><?= $halftimeScore ? (int)$halftimeScore['away'] : '-' ?></strong>
+                            </div>
+                        </div>
+                        <div class="half-row<?= $showSecondHalf ? '' : ' hidden' ?>" data-second-half-block>
+                            <span>Stand nach 2. Halbzeit</span>
+                            <div class="half-score">
+                                <strong data-secondhalf-home><?= $fulltimeScore ? (int)$fulltimeScore['home'] : '-' ?></strong>
+                                <span>:</span>
+                                <strong data-secondhalf-away><?= $fulltimeScore ? (int)$fulltimeScore['away'] : '-' ?></strong>
                             </div>
                         </div>
                     </div>

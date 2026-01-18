@@ -13,11 +13,7 @@
         return `OT${p - 4}`;
     };
 
-    const buildQuarterTable = (history, homeLabel, awayLabel) => {
-        const table = document.querySelector('.quarter-table');
-        if (!table) {
-            return;
-        }
+    const parseHistory = (history) => {
         let parsed = [];
         try {
             parsed = JSON.parse(history || '[]');
@@ -37,6 +33,16 @@
                 maxPeriod = Math.max(maxPeriod, period);
             }
         });
+        return { entries, maxPeriod };
+    };
+
+    const buildQuarterTable = (history, homeLabel, awayLabel) => {
+        const table = document.querySelector('.quarter-table');
+        if (!table) {
+            return;
+        }
+
+        const { entries, maxPeriod } = parseHistory(history);
 
         const quarterHome = [];
         const quarterAway = [];
@@ -80,6 +86,30 @@
         `;
     };
 
+    const updateHalfSummary = (history, currentPeriod) => {
+        const halftimeHome = document.querySelector('[data-halftime-home]');
+        const halftimeAway = document.querySelector('[data-halftime-away]');
+        const secondHalfHome = document.querySelector('[data-secondhalf-home]');
+        const secondHalfAway = document.querySelector('[data-secondhalf-away]');
+        const secondHalfBlock = document.querySelector('[data-second-half-block]');
+        if (!halftimeHome || !halftimeAway) {
+            return;
+        }
+        const { entries, maxPeriod } = parseHistory(history);
+        const halftime = entries.get(2);
+        const fulltime = entries.get(4);
+        halftimeHome.textContent = halftime ? halftime.home : '-';
+        halftimeAway.textContent = halftime ? halftime.away : '-';
+        const showSecondHalf = maxPeriod > 4 || Number(currentPeriod || 0) > 4;
+        if (secondHalfHome && secondHalfAway) {
+            secondHalfHome.textContent = fulltime ? fulltime.home : '-';
+            secondHalfAway.textContent = fulltime ? fulltime.away : '-';
+        }
+        if (secondHalfBlock) {
+            secondHalfBlock.classList.toggle('hidden', !showSecondHalf);
+        }
+    };
+
     const buildPlayerList = (selector, players) => {
         const container = document.querySelector(selector);
         if (!container) {
@@ -121,7 +151,7 @@
             const period = document.querySelector('[data-period]');
             if (homeScore) homeScore.textContent = game.home_score;
             if (awayScore) awayScore.textContent = game.away_score;
-            if (period) period.textContent = periodLabel(game.period);
+            if (period) period.textContent = game.status === 'ended' ? 'Spielende' : periodLabel(game.period);
 
             const teamFoulsHome = document.querySelector('[data-team-fouls-home]');
             const teamFoulsAway = document.querySelector('[data-team-fouls-away]');
@@ -133,6 +163,7 @@
             if (timeoutsAway) timeoutsAway.textContent = game.timeouts_away;
 
             buildQuarterTable(game.quarter_history, game.team_home, game.team_away);
+            updateHalfSummary(game.quarter_history, game.period);
             buildPlayerList('.view-side-home .player-list', payload.players.home || []);
             buildPlayerList('.view-side-away .player-list', payload.players.away || []);
         } catch (error) {
@@ -140,5 +171,6 @@
         }
     };
 
+    updateView();
     setInterval(updateView, 2000);
 })();
