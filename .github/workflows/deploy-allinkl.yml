@@ -12,7 +12,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy via FTPS
+      - name: Prepare dist (only web files)
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          shopt -s dotglob
+          cp -r admin includes public data index.html index.php config.php CNAME .htaccess dist/ 2>/dev/null || true
+          # optional: if you have root assets folder
+          cp -r assets dist/ 2>/dev/null || true
+
+      - name: Deploy via FTPS (dist only)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.SFTP_HOST }}
@@ -21,10 +30,9 @@ jobs:
           protocol: ftps
           port: ${{ secrets.SFTP_PORT }}
           server-dir: ${{ secrets.SFTP_REMOTE_PATH }}
-
+          local-dir: dist/
+          log-level: minimal
+          # SQLite niemals deployen
           exclude: |
-            **/.git*
-            **/.github/**
-            **/README.md
             data/*.sqlite
             data/*.db
