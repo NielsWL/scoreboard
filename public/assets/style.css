@@ -190,6 +190,10 @@ td {
     gap: 0.5rem;
 }
 
+.actions input[type="password"] {
+    max-width: 180px;
+}
+
 .inline {
     display: inline-block;
 }

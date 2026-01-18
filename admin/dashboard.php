@@ -8,11 +8,14 @@ require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../includes/csrf.php';
 
 require_admin();
+start_session();
 
 $db = db();
 $config = config();
 
 $error = '';
+$createdPassword = $_SESSION['last_game_password'] ?? null;
+unset($_SESSION['last_game_password']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
@@ -67,10 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors)) {
+            $password = generate_game_password(10);
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
             $db->beginTransaction();
-            $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)');
+            $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
             $now = now_iso();
-            $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $now, $now]);
+            $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $now, $now]);
             $gameId = (int)$db->lastInsertId();
 
             $playerStmt = $db->prepare('INSERT INTO players (game_id, team, number, name, fouls, active) VALUES (?, ?, ?, ?, 0, 1)');
@@ -78,6 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $playerStmt->execute([$gameId, $player['team'], $player['number'] !== '' ? $player['number'] : null, $player['name']]);
             }
             $db->commit();
+            $_SESSION['last_game_password'] = ['id' => $gameId, 'password' => $password];
             redirect('/admin/dashboard.php');
         }
 
@@ -129,6 +135,9 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
             <?php if ($error !== ''): ?>
                 <div class="alert"><?= e($error) ?></div>
             <?php endif; ?>
+            <?php if (!empty($createdPassword['password'])): ?>
+                <div class="alert">Steuer-Passwort (Spiel #<?= (int)$createdPassword['id'] ?>): <strong><?= e($createdPassword['password']) ?></strong></div>
+            <?php endif; ?>
             <form method="post">
                 <?= csrf_field() ?>
                 <input type="hidden" name="action" value="create_game">
@@ -153,7 +162,7 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
                         <?php for ($i = 0; $i < 12; $i++): ?>
                             <div class="player-row">
                                 <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                                <input type="text" name="home_player_name[]" placeholder="Name" required maxlength="40">
+                                <input type="text" name="home_player_name[]" placeholder="Name" required maxlength="40" value="UBC Name<?= $i + 1 ?>">
                             </div>
                         <?php endfor; ?>
                     </div>
@@ -162,7 +171,7 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
                         <?php for ($i = 0; $i < 12; $i++): ?>
                             <div class="player-row">
                                 <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                                <input type="text" name="away_player_name[]" placeholder="Name" required maxlength="40">
+                                <input type="text" name="away_player_name[]" placeholder="Name" required maxlength="40" value="Gast Name<?= $i + 1 ?>">
                             </div>
                         <?php endfor; ?>
                     </div>

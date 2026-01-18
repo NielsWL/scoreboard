@@ -13,13 +13,6 @@
         return `OT${p - 4}`;
     };
 
-    const formatClock = (seconds) => {
-        const total = Math.max(0, Number(seconds) || 0);
-        const minutes = Math.floor(total / 60);
-        const remaining = total % 60;
-        return `${String(minutes).padStart(2, '0')}:${String(remaining).padStart(2, '0')}`;
-    };
-
     const buildQuarterTable = (history, homeLabel, awayLabel) => {
         const table = document.querySelector('.quarter-table');
         if (!table) {
@@ -119,12 +112,9 @@
             const homeScore = document.querySelector('[data-home-score]');
             const awayScore = document.querySelector('[data-away-score]');
             const period = document.querySelector('[data-period]');
-            const clock = document.querySelector('[data-clock]');
-
             if (homeScore) homeScore.textContent = game.home_score;
             if (awayScore) awayScore.textContent = game.away_score;
             if (period) period.textContent = periodLabel(game.period);
-            if (clock) clock.textContent = formatClock(game.clock_seconds);
 
             buildQuarterTable(game.quarter_history, game.team_home, game.team_away);
             buildPlayerList('.teams-grid > div:first-child .player-list', payload.players.home || []);

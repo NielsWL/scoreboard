@@ -69,12 +69,6 @@ function period_label(int $period): string
     return 'OT' . ($period - 4);
 }
 
-function format_clock(int $seconds): string
-{
-    $minutes = floor($seconds / 60);
-    $remaining = $seconds % 60;
-    return sprintf('%02d:%02d', $minutes, $remaining);
-}
 ?>
 <!doctype html>
 <html lang="de">
@@ -87,7 +81,7 @@ function format_clock(int $seconds): string
     <header class="topbar">
         <h1><?= e($game['title']) ?></h1>
         <nav>
-            <a href="/public/index.php">Alle Spiele</a>
+            <a href="/index.html">Alle Spiele</a>
         </nav>
     </header>
 
@@ -105,7 +99,6 @@ function format_clock(int $seconds): string
             </div>
             <div class="period-block">
                 <div class="period" data-period><?= e(period_label((int)$game['period'])) ?></div>
-                <div class="clock" data-clock><?= e(format_clock((int)$game['clock_seconds'])) ?></div>
             </div>
         </section>
 

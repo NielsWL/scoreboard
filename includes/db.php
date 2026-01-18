@@ -33,11 +33,17 @@ function db(): PDO
         away_score INTEGER NOT NULL DEFAULT 0,
         period INTEGER NOT NULL DEFAULT 1,
         clock_seconds INTEGER NOT NULL DEFAULT 600,
+        control_password_hash TEXT NULL,
         status TEXT NOT NULL DEFAULT "active",
         quarter_history TEXT NOT NULL DEFAULT "[]",
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )');
+
+    $columns = $pdo->query('PRAGMA table_info(games)')->fetchAll(PDO::FETCH_COLUMN, 1);
+    if (!in_array('control_password_hash', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN control_password_hash TEXT NULL');
+    }
 
     $pdo->exec('CREATE TABLE IF NOT EXISTS players (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
