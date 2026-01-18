@@ -33,6 +33,27 @@ if ($action === 'get') {
 
     $homePlayers = array_values(array_filter($players, fn($p) => $p['team'] === 'home'));
     $awayPlayers = array_values(array_filter($players, fn($p) => $p['team'] === 'away'));
+    $history = json_decode($game['quarter_history'], true);
+    if (!is_array($history)) {
+        $history = [];
+    }
+    $homeBaseline = 0;
+    $awayBaseline = 0;
+    for ($i = count($history) - 1; $i >= 0; $i -= 1) {
+        if (isset($history[$i]['fouls_home_total'])) {
+            $homeBaseline = (int)$history[$i]['fouls_home_total'];
+        }
+        if (isset($history[$i]['fouls_away_total'])) {
+            $awayBaseline = (int)$history[$i]['fouls_away_total'];
+        }
+        if ($homeBaseline !== 0 || $awayBaseline !== 0) {
+            break;
+        }
+    }
+    $homeTotal = array_sum(array_map(fn($player) => (int)$player['fouls'], $homePlayers));
+    $awayTotal = array_sum(array_map(fn($player) => (int)$player['fouls'], $awayPlayers));
+    $teamFoulsHome = max(0, $homeTotal - $homeBaseline);
+    $teamFoulsAway = max(0, $awayTotal - $awayBaseline);
 
     header('Content-Type: application/json');
     echo json_encode([
@@ -45,8 +66,8 @@ if ($action === 'get') {
             'away_score' => (int)$game['away_score'],
             'period' => (int)$game['period'],
             'clock_seconds' => (int)$game['clock_seconds'],
-            'team_fouls_home' => (int)$game['team_fouls_home'],
-            'team_fouls_away' => (int)$game['team_fouls_away'],
+            'team_fouls_home' => $teamFoulsHome,
+            'team_fouls_away' => $teamFoulsAway,
             'timeouts_home' => (int)$game['timeouts_home'],
             'timeouts_away' => (int)$game['timeouts_away'],
             'status' => $game['status'],
