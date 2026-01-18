@@ -229,3 +229,130 @@ td {
 .quarter-table td {
     text-align: center;
 }
+
+.view-page .topbar {
+    padding: 0.5rem 1.5rem;
+}
+
+.view-page .topbar h1 {
+    font-size: 1.5rem;
+}
+
+.view-shell {
+    width: 1800px;
+    height: 900px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    box-sizing: border-box;
+}
+
+.view-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 1rem;
+    height: 100%;
+    grid-template-areas: "home center away";
+}
+
+.view-side-home {
+    grid-area: home;
+}
+
+.view-center {
+    grid-area: center;
+}
+
+.view-side-away {
+    grid-area: away;
+}
+
+.view-center {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.view-scoreboard {
+    display: grid;
+    gap: 1rem;
+}
+
+.team-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(200px, 1fr));
+    gap: 1rem;
+    text-align: left;
+}
+
+.team-stats h3 {
+    margin-bottom: 0.5rem;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.view-side h2 {
+    margin-top: 0;
+}
+
+.player-list li {
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.foul-lamps {
+    display: flex;
+    gap: 4px;
+}
+
+.foul-lamps span {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    display: inline-block;
+}
+
+.foul-lamps span.active:nth-child(1) {
+    background: #fde047;
+}
+
+.foul-lamps span.active:nth-child(2) {
+    background: #fbbf24;
+}
+
+.foul-lamps span.active:nth-child(3) {
+    background: #fb923c;
+}
+
+.foul-lamps span.active:nth-child(4) {
+    background: #f97316;
+}
+
+.foul-lamps span.active:nth-child(5) {
+    background: #ef4444;
+}
+
+@media (max-width: 1100px) {
+    .view-shell {
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+    }
+
+    .view-grid {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "center"
+            "home"
+            "away";
+    }
+
+    .team-stats {
+        grid-template-columns: 1fr;
+    }
+}

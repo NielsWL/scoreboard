@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'next_period') {
         $period = (int)$game['period'] + 1;
-        $stmt = $db->prepare('UPDATE games SET period = ?, updated_at = ? WHERE id = ?');
+        $stmt = $db->prepare('UPDATE games SET period = ?, team_fouls_home = 0, team_fouls_away = 0, updated_at = ? WHERE id = ?');
         $stmt->execute([$period, now_iso(), $gameId]);
         redirect('/admin/control.php?id=' . $gameId);
     }
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'away' => (int)$game['away_score'],
         ];
         $period = (int)$game['period'] + 1;
-        $stmt = $db->prepare('UPDATE games SET quarter_history = ?, period = ?, clock_seconds = ?, updated_at = ? WHERE id = ?');
+        $stmt = $db->prepare('UPDATE games SET quarter_history = ?, period = ?, clock_seconds = ?, team_fouls_home = 0, team_fouls_away = 0, updated_at = ? WHERE id = ?');
         $stmt->execute([json_encode($history), $period, (int)$config['QUARTER_SECONDS'], now_iso(), $gameId]);
         redirect('/admin/control.php?id=' . $gameId);
     }
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $awayScore = 0;
             $period = 1;
         }
-        $stmt = $db->prepare('UPDATE games SET quarter_history = ?, home_score = ?, away_score = ?, period = ?, updated_at = ? WHERE id = ?');
+        $stmt = $db->prepare('UPDATE games SET quarter_history = ?, home_score = ?, away_score = ?, period = ?, team_fouls_home = 0, team_fouls_away = 0, updated_at = ? WHERE id = ?');
         $stmt->execute([json_encode(array_values($history)), $homeScore, $awayScore, $period, now_iso(), $gameId]);
         redirect('/admin/control.php?id=' . $gameId);
     }
@@ -117,6 +117,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $fouls = clamp_int((int)$player['fouls'] + $delta, 0, (int)$config['MAX_FOULS']);
             $update = $db->prepare('UPDATE players SET fouls = ? WHERE id = ?');
             $update->execute([$fouls, $playerId]);
+        }
+        redirect('/admin/control.php?id=' . $gameId);
+    }
+
+    if ($action === 'team_foul_adjust') {
+        $team = $_POST['team'] ?? '';
+        $delta = (int)($_POST['delta'] ?? 0);
+        if (in_array($team, ['home', 'away'], true)) {
+            $field = $team === 'home' ? 'team_fouls_home' : 'team_fouls_away';
+            $current = (int)$game[$field];
+            $newValue = clamp_int($current + $delta, 0, (int)$config['MAX_TEAM_FOULS']);
+            $stmt = $db->prepare("UPDATE games SET {$field} = ?, updated_at = ? WHERE id = ?");
+            $stmt->execute([$newValue, now_iso(), $gameId]);
+        }
+        redirect('/admin/control.php?id=' . $gameId);
+    }
+
+    if ($action === 'timeout_adjust') {
+        $team = $_POST['team'] ?? '';
+        $delta = (int)($_POST['delta'] ?? 0);
+        if (in_array($team, ['home', 'away'], true)) {
+            $field = $team === 'home' ? 'timeouts_home' : 'timeouts_away';
+            $current = (int)$game[$field];
+            $newValue = clamp_int($current + $delta, 0, (int)$config['MAX_TIMEOUTS']);
+            $stmt = $db->prepare("UPDATE games SET {$field} = ?, updated_at = ? WHERE id = ?");
+            $stmt->execute([$newValue, now_iso(), $gameId]);
         }
         redirect('/admin/control.php?id=' . $gameId);
     }
@@ -241,6 +267,50 @@ if (!is_array($history)) {
         </section>
 
         <section class="card">
+            <h2>Teamfouls &amp; Timeouts</h2>
+            <div class="teams-grid">
+                <div>
+                    <h3><?= e($game['team_home']) ?></h3>
+                    <p><strong>Teamfouls:</strong> <?= (int)$game['team_fouls_home'] ?></p>
+                    <form method="post" class="button-grid">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="team_foul_adjust">
+                        <input type="hidden" name="team" value="home">
+                        <button name="delta" value="1">+1 Foul</button>
+                        <button name="delta" value="-1" class="secondary">-1 Foul</button>
+                    </form>
+                    <p style="margin-top: 1rem;"><strong>Timeouts:</strong> <?= (int)$game['timeouts_home'] ?></p>
+                    <form method="post" class="button-grid">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="timeout_adjust">
+                        <input type="hidden" name="team" value="home">
+                        <button name="delta" value="1">+1 Timeout</button>
+                        <button name="delta" value="-1" class="secondary">-1 Timeout</button>
+                    </form>
+                </div>
+                <div>
+                    <h3><?= e($game['team_away']) ?></h3>
+                    <p><strong>Teamfouls:</strong> <?= (int)$game['team_fouls_away'] ?></p>
+                    <form method="post" class="button-grid">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="team_foul_adjust">
+                        <input type="hidden" name="team" value="away">
+                        <button name="delta" value="1">+1 Foul</button>
+                        <button name="delta" value="-1" class="secondary">-1 Foul</button>
+                    </form>
+                    <p style="margin-top: 1rem;"><strong>Timeouts:</strong> <?= (int)$game['timeouts_away'] ?></p>
+                    <form method="post" class="button-grid">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="timeout_adjust">
+                        <input type="hidden" name="team" value="away">
+                        <button name="delta" value="1">+1 Timeout</button>
+                        <button name="delta" value="-1" class="secondary">-1 Timeout</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
             <h2>Teamnamen bearbeiten</h2>
             <form method="post" class="grid">
                 <?= csrf_field() ?>
@@ -345,6 +415,11 @@ if (!is_array($history)) {
                     </table>
                 </div>
             </div>
+        </section>
+
+        <section class="card">
+            <h2>Steuer-Passwort</h2>
+            <p><strong><?= e((string)($game['control_password_plain'] ?? '')) ?></strong></p>
         </section>
     </main>
 </body>

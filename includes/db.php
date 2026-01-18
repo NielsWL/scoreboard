@@ -34,6 +34,11 @@ function db(): PDO
         period INTEGER NOT NULL DEFAULT 1,
         clock_seconds INTEGER NOT NULL DEFAULT 600,
         control_password_hash TEXT NULL,
+        control_password_plain TEXT NULL,
+        team_fouls_home INTEGER NOT NULL DEFAULT 0,
+        team_fouls_away INTEGER NOT NULL DEFAULT 0,
+        timeouts_home INTEGER NOT NULL DEFAULT 0,
+        timeouts_away INTEGER NOT NULL DEFAULT 0,
         status TEXT NOT NULL DEFAULT "active",
         quarter_history TEXT NOT NULL DEFAULT "[]",
         created_at TEXT NOT NULL,
@@ -43,6 +48,21 @@ function db(): PDO
     $columns = $pdo->query('PRAGMA table_info(games)')->fetchAll(PDO::FETCH_COLUMN, 1);
     if (!in_array('control_password_hash', $columns, true)) {
         $pdo->exec('ALTER TABLE games ADD COLUMN control_password_hash TEXT NULL');
+    }
+    if (!in_array('control_password_plain', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN control_password_plain TEXT NULL');
+    }
+    if (!in_array('team_fouls_home', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN team_fouls_home INTEGER NOT NULL DEFAULT 0');
+    }
+    if (!in_array('team_fouls_away', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN team_fouls_away INTEGER NOT NULL DEFAULT 0');
+    }
+    if (!in_array('timeouts_home', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN timeouts_home INTEGER NOT NULL DEFAULT 0');
+    }
+    if (!in_array('timeouts_away', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN timeouts_away INTEGER NOT NULL DEFAULT 0');
     }
 
     $pdo->exec('CREATE TABLE IF NOT EXISTS players (

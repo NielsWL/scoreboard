@@ -85,13 +85,20 @@
         if (!container) {
             return;
         }
+        const maxFouls = 5;
         container.innerHTML = players.map((player) => {
             const foulClass = Number(player.fouls) >= 5 ? 'foul-out' : '';
             const number = player.number ? `${player.number} ` : '';
+            const lamps = Array.from({ length: maxFouls }, (_, index) => {
+                const active = Number(player.fouls) >= index + 1 ? 'active' : '';
+                return `<span class="${active}"></span>`;
+            }).join('');
             return `
                 <li class="${foulClass}">
                     <span>${number}${player.name}</span>
-                    <strong>${player.fouls}</strong>
+                    <div class="foul-lamps" aria-label="Fouls: ${player.fouls}">
+                        ${lamps}
+                    </div>
                 </li>
             `;
         }).join('');
@@ -116,9 +123,18 @@
             if (awayScore) awayScore.textContent = game.away_score;
             if (period) period.textContent = periodLabel(game.period);
 
+            const teamFoulsHome = document.querySelector('[data-team-fouls-home]');
+            const teamFoulsAway = document.querySelector('[data-team-fouls-away]');
+            const timeoutsHome = document.querySelector('[data-timeouts-home]');
+            const timeoutsAway = document.querySelector('[data-timeouts-away]');
+            if (teamFoulsHome) teamFoulsHome.textContent = game.team_fouls_home;
+            if (teamFoulsAway) teamFoulsAway.textContent = game.team_fouls_away;
+            if (timeoutsHome) timeoutsHome.textContent = game.timeouts_home;
+            if (timeoutsAway) timeoutsAway.textContent = game.timeouts_away;
+
             buildQuarterTable(game.quarter_history, game.team_home, game.team_away);
-            buildPlayerList('.teams-grid > div:first-child .player-list', payload.players.home || []);
-            buildPlayerList('.teams-grid > div:last-child .player-list', payload.players.away || []);
+            buildPlayerList('.view-side-home .player-list', payload.players.home || []);
+            buildPlayerList('.view-side-away .player-list', payload.players.away || []);
         } catch (error) {
             console.warn('Polling failed', error);
         }
