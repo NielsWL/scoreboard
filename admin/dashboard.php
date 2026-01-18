@@ -73,9 +73,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $password = generate_game_password(10);
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
             $db->beginTransaction();
-            $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
+            $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, control_password_plain, team_fouls_home, team_fouls_away, timeouts_home, timeouts_away, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, 0, 0, 0, ?, ?)');
             $now = now_iso();
-            $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $now, $now]);
+            $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $password, $now, $now]);
             $gameId = (int)$db->lastInsertId();
 
             $playerStmt = $db->prepare('INSERT INTO players (game_id, team, number, name, fouls, active) VALUES (?, ?, ?, ?, 0, 1)');
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'reset_game') {
         $gameId = (int)($_POST['game_id'] ?? 0);
         if ($gameId > 0) {
-            $stmt = $db->prepare('UPDATE games SET home_score = 0, away_score = 0, period = 1, clock_seconds = ?, quarter_history = "[]", updated_at = ? WHERE id = ?');
+            $stmt = $db->prepare('UPDATE games SET home_score = 0, away_score = 0, period = 1, clock_seconds = ?, quarter_history = "[]", team_fouls_home = 0, team_fouls_away = 0, timeouts_home = 0, timeouts_away = 0, updated_at = ? WHERE id = ?');
             $stmt->execute([(int)$config['QUARTER_SECONDS'], now_iso(), $gameId]);
             $stmt = $db->prepare('UPDATE players SET fouls = 0 WHERE game_id = ?');
             $stmt->execute([$gameId]);
@@ -194,6 +194,7 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
                             <th>Score</th>
                             <th>Period</th>
                             <th>Status</th>
+                            <th>Steuer-Passwort</th>
                             <th>Aktionen</th>
                         </tr>
                     </thead>
@@ -203,9 +204,10 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
                                 <td><?= e($game['title']) ?></td>
                                 <td><?= e($game['team_home']) ?> vs <?= e($game['team_away']) ?></td>
                                 <td><?= (int)$game['home_score'] ?> : <?= (int)$game['away_score'] ?></td>
-                                <td><?= (int)$game['period'] ?></td>
-                                <td><?= e($game['status']) ?></td>
-                                <td class="actions">
+                            <td><?= (int)$game['period'] ?></td>
+                            <td><?= e($game['status']) ?></td>
+                            <td><?= e((string)($game['control_password_plain'] ?? '')) ?></td>
+                            <td class="actions">
                                     <a class="button" href="/admin/control.php?id=<?= (int)$game['id'] ?>">Steuern</a>
                                     <a class="button" href="/public/view.php?id=<?= (int)$game['id'] ?>" target="_blank">View</a>
                                     <form method="post" class="inline" onsubmit="return confirm('Spiel wirklich zurücksetzen?');">

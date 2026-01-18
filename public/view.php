@@ -77,7 +77,7 @@ function period_label(int $period): string
     <title><?= e($game['title']) ?></title>
     <link rel="stylesheet" href="/public/assets/style.css">
 </head>
-<body data-game-id="<?= (int)$gameId ?>">
+<body class="view-page" data-game-id="<?= (int)$gameId ?>">
     <header class="topbar">
         <h1><?= e($game['title']) ?></h1>
         <nav>
@@ -85,79 +85,111 @@ function period_label(int $period): string
         </nav>
     </header>
 
-    <main class="container">
-        <section class="card view-scoreboard">
-            <div class="score-block">
-                <div>
-                    <h2><?= e($game['team_home']) ?></h2>
-                    <div class="score" data-home-score><?= (int)$game['home_score'] ?></div>
-                </div>
-                <div>
-                    <h2><?= e($game['team_away']) ?></h2>
-                    <div class="score" data-away-score><?= (int)$game['away_score'] ?></div>
-                </div>
-            </div>
-            <div class="period-block">
-                <div class="period" data-period><?= e(period_label((int)$game['period'])) ?></div>
-            </div>
-        </section>
+    <main class="view-shell">
+        <div class="view-grid">
+            <section class="card view-side view-side-home">
+                <h2><?= e($game['team_home']) ?> Fouls</h2>
+                <ul class="player-list">
+                    <?php foreach ($homePlayers as $player): ?>
+                        <li class="<?= (int)$player['fouls'] >= (int)$config['MAX_FOULS'] ? 'foul-out' : '' ?>">
+                            <span><?= e((string)$player['number']) ?> <?= e($player['name']) ?></span>
+                            <div class="foul-lamps" aria-label="Fouls: <?= (int)$player['fouls'] ?>">
+                                <?php for ($lamp = 1; $lamp <= (int)$config['MAX_FOULS']; $lamp++): ?>
+                                    <span class="<?= (int)$player['fouls'] >= $lamp ? 'active' : '' ?>"></span>
+                                <?php endfor; ?>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </section>
 
-        <section class="card">
-            <h2>Viertel-History</h2>
-            <table class="quarter-table">
-                <thead>
-                    <tr>
-                        <th>Team</th>
-                        <?php for ($period = 1; $period <= $maxPeriod; $period++): ?>
-                            <th><?= e(period_label($period)) ?></th>
-                        <?php endfor; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><?= e($game['team_home']) ?></td>
-                        <?php for ($period = 1; $period <= $maxPeriod; $period++): ?>
-                            <td><?= $quarterHome[$period] === null ? '-' : (int)$quarterHome[$period] ?></td>
-                        <?php endfor; ?>
-                    </tr>
-                    <tr>
-                        <td><?= e($game['team_away']) ?></td>
-                        <?php for ($period = 1; $period <= $maxPeriod; $period++): ?>
-                            <td><?= $quarterAway[$period] === null ? '-' : (int)$quarterAway[$period] ?></td>
-                        <?php endfor; ?>
-                    </tr>
-                </tbody>
-            </table>
-            <p class="muted">Hinweis: Viertelwerte werden aus kumulativ gespeicherten Endständen berechnet.</p>
-        </section>
+            <section class="card view-center">
+                <div class="view-scoreboard">
+                    <div class="score-block">
+                        <div>
+                            <h2><?= e($game['team_home']) ?></h2>
+                            <div class="score" data-home-score><?= (int)$game['home_score'] ?></div>
+                        </div>
+                        <div>
+                            <h2><?= e($game['team_away']) ?></h2>
+                            <div class="score" data-away-score><?= (int)$game['away_score'] ?></div>
+                        </div>
+                    </div>
+                    <div class="period-block">
+                        <div class="period" data-period><?= e(period_label((int)$game['period'])) ?></div>
+                    </div>
+                    <div class="team-stats">
+                        <div>
+                            <h3>Teamfouls</h3>
+                            <div class="stat-row">
+                                <span><?= e($game['team_home']) ?></span>
+                                <strong data-team-fouls-home><?= (int)$game['team_fouls_home'] ?></strong>
+                            </div>
+                            <div class="stat-row">
+                                <span><?= e($game['team_away']) ?></span>
+                                <strong data-team-fouls-away><?= (int)$game['team_fouls_away'] ?></strong>
+                            </div>
+                        </div>
+                        <div>
+                            <h3>Timeouts</h3>
+                            <div class="stat-row">
+                                <span><?= e($game['team_home']) ?></span>
+                                <strong data-timeouts-home><?= (int)$game['timeouts_home'] ?></strong>
+                            </div>
+                            <div class="stat-row">
+                                <span><?= e($game['team_away']) ?></span>
+                                <strong data-timeouts-away><?= (int)$game['timeouts_away'] ?></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        <section class="card">
-            <h2>Spielerfouls</h2>
-            <div class="teams-grid">
-                <div>
-                    <h3><?= e($game['team_home']) ?></h3>
-                    <ul class="player-list">
-                        <?php foreach ($homePlayers as $player): ?>
-                            <li class="<?= (int)$player['fouls'] >= (int)$config['MAX_FOULS'] ? 'foul-out' : '' ?>">
-                                <span><?= e((string)$player['number']) ?> <?= e($player['name']) ?></span>
-                                <strong><?= (int)$player['fouls'] ?></strong>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
+                <div class="view-history">
+                    <h2>Viertel-History</h2>
+                    <table class="quarter-table">
+                        <thead>
+                            <tr>
+                                <th>Team</th>
+                                <?php for ($period = 1; $period <= $maxPeriod; $period++): ?>
+                                    <th><?= e(period_label($period)) ?></th>
+                                <?php endfor; ?>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><?= e($game['team_home']) ?></td>
+                                <?php for ($period = 1; $period <= $maxPeriod; $period++): ?>
+                                    <td><?= $quarterHome[$period] === null ? '-' : (int)$quarterHome[$period] ?></td>
+                                <?php endfor; ?>
+                            </tr>
+                            <tr>
+                                <td><?= e($game['team_away']) ?></td>
+                                <?php for ($period = 1; $period <= $maxPeriod; $period++): ?>
+                                    <td><?= $quarterAway[$period] === null ? '-' : (int)$quarterAway[$period] ?></td>
+                                <?php endfor; ?>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="muted">Hinweis: Viertelwerte werden aus kumulativ gespeicherten Endständen berechnet.</p>
                 </div>
-                <div>
-                    <h3><?= e($game['team_away']) ?></h3>
-                    <ul class="player-list">
-                        <?php foreach ($awayPlayers as $player): ?>
-                            <li class="<?= (int)$player['fouls'] >= (int)$config['MAX_FOULS'] ? 'foul-out' : '' ?>">
-                                <span><?= e((string)$player['number']) ?> <?= e($player['name']) ?></span>
-                                <strong><?= (int)$player['fouls'] ?></strong>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-        </section>
+            </section>
+
+            <section class="card view-side view-side-away">
+                <h2><?= e($game['team_away']) ?> Fouls</h2>
+                <ul class="player-list">
+                    <?php foreach ($awayPlayers as $player): ?>
+                        <li class="<?= (int)$player['fouls'] >= (int)$config['MAX_FOULS'] ? 'foul-out' : '' ?>">
+                            <span><?= e((string)$player['number']) ?> <?= e($player['name']) ?></span>
+                            <div class="foul-lamps" aria-label="Fouls: <?= (int)$player['fouls'] ?>">
+                                <?php for ($lamp = 1; $lamp <= (int)$config['MAX_FOULS']; $lamp++): ?>
+                                    <span class="<?= (int)$player['fouls'] >= $lamp ? 'active' : '' ?>"></span>
+                                <?php endfor; ?>
+                            </div>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </section>
+        </div>
     </main>
 
     <script src="/public/assets/app.js"></script>

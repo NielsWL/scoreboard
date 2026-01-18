@@ -75,9 +75,9 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
     $db->beginTransaction();
-    $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, control_password_plain, team_fouls_home, team_fouls_away, timeouts_home, timeouts_away, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, 0, 0, 0, ?, ?)');
     $now = now_iso();
-    $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $now, $now]);
+    $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $password, $now, $now]);
     $gameId = (int)$db->lastInsertId();
 
     $playerStmt = $db->prepare('INSERT INTO players (game_id, team, number, name, fouls, active) VALUES (?, ?, ?, ?, 0, 1)');

@@ -17,7 +17,7 @@
     <main class="container">
         <section class="card">
             <h2>Neues Spiel anlegen</h2>
-            <form id="create-game-form">
+            <form id="create-game-form" action="/public/create.php" method="get">
                 <div class="grid">
                     <label>
                         Spieltitel
@@ -32,114 +32,9 @@
                         <input type="text" name="team_away" required maxlength="40" value="Gast">
                     </label>
                 </div>
-
-                <div class="teams-grid">
-                    <div>
-                        <h3>Heimspieler (12)</h3>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name1">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name2">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name3">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name4">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name5">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name6">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name7">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name8">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name9">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name10">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name11">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="home_player_name[]" required maxlength="40" value="UBC Name12">
-                        </div>
-                    </div>
-                    <div>
-                        <h3>Auswärtsspieler (12)</h3>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name1">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name2">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name3">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name4">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name5">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name6">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name7">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name8">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name9">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name10">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name11">
-                        </div>
-                        <div class="player-row">
-                            <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                            <input type="text" name="away_player_name[]" required maxlength="40" value="Gast Name12">
-                        </div>
-                    </div>
-                </div>
-                <button type="submit">Spiel erstellen</button>
+                <button type="submit">Weiter zur Detailseite</button>
             </form>
-            <div id="create-result" class="muted" style="margin-top: 1rem;"></div>
+            <p class="muted" style="margin-top: 0.75rem;">Auf der Detailseite können Spieler, Fouls und weitere Angaben angepasst werden.</p>
         </section>
 
         <section class="card">
@@ -150,9 +45,6 @@
 
     <script>
         const listEl = document.getElementById('game-list');
-        const formEl = document.getElementById('create-game-form');
-        const resultEl = document.getElementById('create-result');
-
         const renderGames = (games = []) => {
             if (!games.length) {
                 listEl.innerHTML = '<p>Keine aktiven Spiele.</p>';
@@ -186,26 +78,6 @@
                 console.warn('Konnte Spiele nicht laden', error);
             }
         };
-
-        formEl.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            resultEl.textContent = 'Spiel wird angelegt...';
-            try {
-                const response = await fetch('/public/api.php?action=create', {
-                    method: 'POST',
-                    body: new FormData(formEl),
-                });
-                const payload = await response.json();
-                if (!response.ok) {
-                    resultEl.textContent = payload.error || 'Fehler beim Anlegen.';
-                    return;
-                }
-                resultEl.innerHTML = `Steuer-Passwort: <strong>${payload.password}</strong> (Spiel #${payload.game_id})`;
-                await loadGames();
-            } catch (error) {
-                resultEl.textContent = 'Fehler beim Anlegen.';
-            }
-        });
 
         loadGames();
     </script>
