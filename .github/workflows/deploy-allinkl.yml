@@ -22,7 +22,7 @@ jobs:
           username: ${{ secrets.SFTP_USER }}
           password: ${{ secrets.SFTP_PASS }}
           port: ${{ secrets.SFTP_PORT }}
-          source: "admin/**,public/**,includes/**,config.php,index.php,*.html,assets/**"
+          source: "index.php,index.html,*.css,*.js,assets/**,admin/**,includes/**,public/**,data/**,.htaccess"
           target: ${{ secrets.SFTP_REMOTE_PATH }}
           overwrite: true
           strip_components: 0
