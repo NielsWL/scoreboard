@@ -1,8 +1,8 @@
-name: Deploy to All-Inkl via SFTP
+name: Deploy to All-Inkl via FTPS
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -12,17 +12,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Optional: Dateien/Ordner ausschliessen, die nicht auf den Webspace sollen
-      # (z.B. .gitignore, README, .github etc.) -> siehe Schritt 4
-
-      - name: SFTP Deploy
-        uses: appleboy/scp-action@v0.1.7
+      - name: Deploy via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: ${{ secrets.SFTP_HOST }}
+          server: ${{ secrets.SFTP_HOST }}
           username: ${{ secrets.SFTP_USER }}
           password: ${{ secrets.SFTP_PASS }}
+          protocol: ftps
           port: ${{ secrets.SFTP_PORT }}
-          source: "index.php,index.html,*.css,*.js,assets/**,admin/**,includes/**,public/**,data/**,.htaccess"
-          target: ${{ secrets.SFTP_REMOTE_PATH }}
-          overwrite: true
-          strip_components: 0
+          server-dir: ${{ secrets.SFTP_REMOTE_PATH }}
+
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/README.md
+            data/*.sqlite
+            data/*.db
