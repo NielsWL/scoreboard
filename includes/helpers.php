@@ -29,3 +29,14 @@ function clamp_int(int $value, int $min, int $max): int
 {
     return max($min, min($max, $value));
 }
+
+function generate_game_password(int $length = 10): string
+{
+    $characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789';
+    $maxIndex = strlen($characters) - 1;
+    $password = '';
+    for ($i = 0; $i < $length; $i++) {
+        $password .= $characters[random_int(0, $maxIndex)];
+    }
+    return $password;
+}

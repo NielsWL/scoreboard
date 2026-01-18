@@ -7,8 +7,6 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../includes/csrf.php';
 
-require_admin();
-
 $db = db();
 $config = config();
 
@@ -16,6 +14,8 @@ $gameId = (int)($_GET['id'] ?? 0);
 if ($gameId <= 0) {
     redirect('/admin/dashboard.php');
 }
+
+require_admin_or_game_access($gameId);
 
 function period_label(int $period): string
 {
@@ -157,12 +157,6 @@ if (!is_array($history)) {
     $history = [];
 }
 
-function format_clock(int $seconds): string
-{
-    $minutes = floor($seconds / 60);
-    $remaining = $seconds % 60;
-    return sprintf('%02d:%02d', $minutes, $remaining);
-}
 ?>
 <!doctype html>
 <html lang="de">
@@ -213,7 +207,6 @@ function format_clock(int $seconds): string
             </div>
             <div class="period-block">
                 <div class="period"><?= e(period_label((int)$game['period'])) ?></div>
-                <div class="clock"><?= e(format_clock((int)$game['clock_seconds'])) ?></div>
                 <div class="button-row">
                     <form method="post" class="inline">
                         <?= csrf_field() ?>
@@ -231,16 +224,6 @@ function format_clock(int $seconds): string
                         <button type="submit" class="secondary">Letztes Viertel löschen</button>
                     </form>
                 </div>
-            </div>
-            <div class="clock-controls">
-                <form method="post" class="inline">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="action" value="clock_adjust">
-                    <button name="delta" value="-60" class="secondary">-60s</button>
-                    <button name="delta" value="-10" class="secondary">-10s</button>
-                    <button name="delta" value="10">+10s</button>
-                    <button name="delta" value="60">+60s</button>
-                </form>
             </div>
         </section>
 
