@@ -1,2 +1,2 @@
 # scoreboard
-Scoreboad Ballsporthalle Pascal-Gymnasium
+Scoreboard Ballsporthalle Pascal-Gymnasium
