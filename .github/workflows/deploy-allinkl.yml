@@ -1,0 +1,28 @@
+name: Deploy to All-Inkl via SFTP
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Optional: Dateien/Ordner ausschliessen, die nicht auf den Webspace sollen
+      # (z.B. .gitignore, README, .github etc.) -> siehe Schritt 4
+
+      - name: SFTP Deploy
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SFTP_HOST }}
+          username: ${{ secrets.SFTP_USER }}
+          password: ${{ secrets.SFTP_PASS }}
+          port: ${{ secrets.SFTP_PORT }}
+          source: "./*"
+          target: ${{ secrets.SFTP_REMOTE_PATH }}
+          overwrite: true
+          strip_components: 0
