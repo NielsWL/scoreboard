@@ -108,6 +108,7 @@ a {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 2rem;
     text-align: center;
+    font_size: 4rem;
 }
 
 .score-grid {
