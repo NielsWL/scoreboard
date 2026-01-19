@@ -103,6 +103,15 @@ a {
     text-align: center;
 }
 
+.score-grid {
+    grid-template-columns: minmax(220px, 1fr) minmax(80px, auto) minmax(220px, 1fr);
+    align-items: start;
+}
+
+.score-spacer {
+    width: 100%;
+}
+
 .score {
     font-size: 3rem;
     font-weight: 700;
@@ -273,6 +282,18 @@ td {
 .foul-out {
     color: #b91c1c;
     font-weight: 600;
+}
+
+.foul-out td {
+    background: #fee2e2;
+}
+
+.player-list li.foul-out,
+.foul-control-list li.foul-out {
+    background: #fee2e2;
+    border-radius: 6px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
 .game-list {
@@ -529,6 +550,26 @@ td {
 .center-stat-buttons {
     margin-top: 0.35rem;
     grid-template-columns: repeat(2, minmax(40px, 1fr));
+}
+
+.control-scoreboard {
+    margin-bottom: 1.5rem;
+}
+
+.view-page .team-stats {
+    text-align: center;
+}
+
+.view-page .score-stat-list .center-stat-row {
+    grid-template-columns: minmax(220px, 1fr) minmax(80px, auto) minmax(220px, 1fr);
+}
+
+.view-page .score-stat-list .center-stat-value {
+    font-size: 1.8rem;
+}
+
+.view-page .score-stat-list .center-stat-label {
+    font-size: 1.1rem;
 }
 
 @media (max-width: 1100px) {
