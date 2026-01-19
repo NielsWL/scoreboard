@@ -126,11 +126,12 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
 
             <section class="card view-center">
                 <div class="view-scoreboard">
-                    <div class="score-block">
+                    <div class="score-block score-grid">
                         <div>
                             <h2><?= e($game['team_home']) ?></h2>
                             <div class="score" data-home-score><?= (int)$game['home_score'] ?></div>
                         </div>
+                        <div class="score-spacer" aria-hidden="true"></div>
                         <div>
                             <h2><?= e($game['team_away']) ?></h2>
                             <div class="score" data-away-score><?= (int)$game['away_score'] ?></div>
@@ -139,7 +140,7 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
                     <div class="period-block">
                         <div class="period" data-period><?= $game['status'] === 'ended' ? 'Spielende' : e(period_label((int)$game['period'])) ?></div>
                     </div>
-                    <div class="team-stats center-stat-list">
+                    <div class="team-stats center-stat-list score-stat-list">
                         <div class="center-stat-row">
                             <strong class="center-stat-value" data-team-fouls-home><?= $teamFoulsHome ?></strong>
                             <span class="center-stat-label">Teamfouls</span>
