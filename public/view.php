@@ -69,6 +69,17 @@ function period_label(int $period): string
     return 'OT' . ($period - 4);
 }
 
+function timeout_warning_threshold(int $period): int
+{
+    if ($period >= 5) {
+        return 1;
+    }
+    if ($period >= 3) {
+        return 3;
+    }
+    return 2;
+}
+
 $homeFoulsTotal = array_sum(array_map(fn($player) => (int)$player['fouls'], $homePlayers));
 $awayFoulsTotal = array_sum(array_map(fn($player) => (int)$player['fouls'], $awayPlayers));
 $homeBaseline = 0;
@@ -147,9 +158,9 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
                             <strong class="center-stat-value <?= $teamFoulsAway >= 5 ? 'team-fouls-warning' : '' ?>" data-team-fouls-away><?= $teamFoulsAway ?></strong>
                         </div>
                         <div class="center-stat-row">
-                            <strong class="center-stat-value" data-timeouts-home><?= (int)$game['timeouts_home'] ?></strong>
+                            <strong class="center-stat-value <?= (int)$game['timeouts_home'] >= timeout_warning_threshold((int)$game['period']) ? 'timeouts-warning' : '' ?>" data-timeouts-home><?= (int)$game['timeouts_home'] ?></strong>
                             <span class="center-stat-label">Timeouts</span>
-                            <strong class="center-stat-value" data-timeouts-away><?= (int)$game['timeouts_away'] ?></strong>
+                            <strong class="center-stat-value <?= (int)$game['timeouts_away'] >= timeout_warning_threshold((int)$game['period']) ? 'timeouts-warning' : '' ?>" data-timeouts-away><?= (int)$game['timeouts_away'] ?></strong>
                         </div>
                     </div>
                     <div class="half-summary">

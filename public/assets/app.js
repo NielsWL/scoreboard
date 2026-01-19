@@ -142,6 +142,26 @@
         element.classList.toggle('team-fouls-warning', total >= 5);
     };
 
+    const timeoutWarningThreshold = (period) => {
+        const value = Number(period) || 1;
+        if (value >= 5) {
+            return 1;
+        }
+        if (value >= 3) {
+            return 3;
+        }
+        return 2;
+    };
+
+    const updateTimeoutWarning = (element, value, period) => {
+        if (!element) {
+            return;
+        }
+        const total = Number(value) || 0;
+        const threshold = timeoutWarningThreshold(period);
+        element.classList.toggle('timeouts-warning', total >= threshold);
+    };
+
     const updateView = async () => {
         try {
             const response = await fetch(`/admin/api.php?action=get&id=${gameId}`);
@@ -173,8 +193,14 @@
                 teamFoulsAway.textContent = game.team_fouls_away;
                 updateTeamFoulWarning(teamFoulsAway, game.team_fouls_away);
             }
-            if (timeoutsHome) timeoutsHome.textContent = game.timeouts_home;
-            if (timeoutsAway) timeoutsAway.textContent = game.timeouts_away;
+            if (timeoutsHome) {
+                timeoutsHome.textContent = game.timeouts_home;
+                updateTimeoutWarning(timeoutsHome, game.timeouts_home, game.period);
+            }
+            if (timeoutsAway) {
+                timeoutsAway.textContent = game.timeouts_away;
+                updateTimeoutWarning(timeoutsAway, game.timeouts_away, game.period);
+            }
 
             buildQuarterTable(game.quarter_history, game.team_home, game.team_away);
             updateHalfSummary(game.quarter_history, game.period);

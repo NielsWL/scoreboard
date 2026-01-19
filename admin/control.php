@@ -25,6 +25,17 @@ function period_label(int $period): string
     return 'OT' . ($period - 4);
 }
 
+function timeout_warning_threshold(int $period): int
+{
+    if ($period >= 5) {
+        return 1;
+    }
+    if ($period >= 3) {
+        return 3;
+    }
+    return 2;
+}
+
 function sum_team_fouls(array $players, string $team): int
 {
     $sum = 0;
@@ -201,6 +212,19 @@ if (!is_array($history)) {
     $history = [];
 }
 
+$entriesByPeriod = [];
+$maxPeriod = 4;
+foreach ($history as $entry) {
+    $period = (int)($entry['period'] ?? 0);
+    if ($period > 0) {
+        $entriesByPeriod[$period] = [
+            'home' => (int)($entry['home'] ?? 0),
+            'away' => (int)($entry['away'] ?? 0),
+        ];
+        $maxPeriod = max($maxPeriod, $period);
+    }
+}
+
 $homeFoulsTotal = sum_team_fouls($players, 'home');
 $awayFoulsTotal = sum_team_fouls($players, 'away');
 $homeBaseline = foul_baseline($history, 'home');
@@ -211,18 +235,28 @@ $teamFoulsAway = max(0, $awayFoulsTotal - $awayBaseline);
 $historyRows = [];
 $prevHome = 0;
 $prevAway = 0;
-foreach ($history as $entry) {
-    $homeScore = (int)($entry['home'] ?? 0);
-    $awayScore = (int)($entry['away'] ?? 0);
-    $historyRows[] = [
-        'period' => (int)($entry['period'] ?? 0),
-        'quarter_home' => $homeScore - $prevHome,
-        'quarter_away' => $awayScore - $prevAway,
-        'home' => $homeScore,
-        'away' => $awayScore,
-    ];
-    $prevHome = $homeScore;
-    $prevAway = $awayScore;
+for ($period = 1; $period <= $maxPeriod; $period++) {
+    if (isset($entriesByPeriod[$period])) {
+        $homeScore = $entriesByPeriod[$period]['home'];
+        $awayScore = $entriesByPeriod[$period]['away'];
+        $historyRows[] = [
+            'period' => $period,
+            'quarter_home' => $homeScore - $prevHome,
+            'quarter_away' => $awayScore - $prevAway,
+            'home' => $homeScore,
+            'away' => $awayScore,
+        ];
+        $prevHome = $homeScore;
+        $prevAway = $awayScore;
+    } else {
+        $historyRows[] = [
+            'period' => $period,
+            'quarter_home' => null,
+            'quarter_away' => null,
+            'home' => null,
+            'away' => null,
+        ];
+    }
 }
 
 ?>
@@ -320,7 +354,7 @@ foreach ($history as $entry) {
                     </div>
                     <div class="center-stat-row">
                         <div class="center-stat-side">
-                            <strong class="center-stat-value"><?= (int)$game['timeouts_home'] ?></strong>
+                            <strong class="center-stat-value <?= (int)$game['timeouts_home'] >= timeout_warning_threshold((int)$game['period']) ? 'timeouts-warning' : '' ?>"><?= (int)$game['timeouts_home'] ?></strong>
                             <form method="post" class="button-grid compact center-stat-buttons">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="action" value="timeout_adjust">
@@ -331,7 +365,7 @@ foreach ($history as $entry) {
                         </div>
                         <span class="center-stat-label">Timeouts</span>
                         <div class="center-stat-side">
-                            <strong class="center-stat-value"><?= (int)$game['timeouts_away'] ?></strong>
+                            <strong class="center-stat-value <?= (int)$game['timeouts_away'] >= timeout_warning_threshold((int)$game['period']) ? 'timeouts-warning' : '' ?>"><?= (int)$game['timeouts_away'] ?></strong>
                             <form method="post" class="button-grid compact center-stat-buttons">
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="action" value="timeout_adjust">
@@ -365,16 +399,41 @@ foreach ($history as $entry) {
         </section>
 
         <section class="card">
-            <h2>Viertel-History (kumulativ &amp; Viertelwerte)</h2>
+            <h2>Viertel-History</h2>
             <?php if (empty($history)): ?>
                 <p>Noch keine Einträge.</p>
             <?php else: ?>
+                <h3>Viertelwerte</h3>
+                <table class="quarter-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <?php for ($period = 1; $period <= $maxPeriod; $period++): ?>
+                                <th><?= e(period_label($period)) ?></th>
+                            <?php endfor; ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><?= e($game['team_home']) ?></td>
+                            <?php foreach ($historyRows as $row): ?>
+                                <td><?= $row['quarter_home'] === null ? '-' : (int)$row['quarter_home'] ?></td>
+                            <?php endforeach; ?>
+                        </tr>
+                        <tr>
+                            <td><?= e($game['team_away']) ?></td>
+                            <?php foreach ($historyRows as $row): ?>
+                                <td><?= $row['quarter_away'] === null ? '-' : (int)$row['quarter_away'] ?></td>
+                            <?php endforeach; ?>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="muted">Hinweis: Viertelwerte werden aus kumulativ gespeicherten Endständen berechnet.</p>
+                <h3>kumulativ</h3>
                 <table>
                     <thead>
                         <tr>
                             <th>Viertel</th>
-                            <th>Heim (Viertel)</th>
-                            <th>Gast (Viertel)</th>
                             <th>Heim (kumulativ)</th>
                             <th>Gast (kumulativ)</th>
                         </tr>
@@ -383,10 +442,8 @@ foreach ($history as $entry) {
                         <?php foreach ($historyRows as $row): ?>
                             <tr>
                                 <td><?= e(period_label((int)$row['period'])) ?></td>
-                                <td><?= (int)$row['quarter_home'] ?></td>
-                                <td><?= (int)$row['quarter_away'] ?></td>
-                                <td><?= (int)$row['home'] ?></td>
-                                <td><?= (int)$row['away'] ?></td>
+                                <td><?= $row['home'] === null ? '-' : (int)$row['home'] ?></td>
+                                <td><?= $row['away'] === null ? '-' : (int)$row['away'] ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
