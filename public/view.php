@@ -184,7 +184,7 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
                 </div>
 
                 <div class="view-history">
-                    <h2>Viertel-History</h2>
+                    <h2>Viertel-Spielstände</h2>
                     <table class="quarter-table">
                         <thead>
                             <tr>
