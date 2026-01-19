@@ -40,6 +40,9 @@ function db(): PDO
         timeouts_home INTEGER NOT NULL DEFAULT 0,
         timeouts_away INTEGER NOT NULL DEFAULT 0,
         status TEXT NOT NULL DEFAULT "active",
+        game_date TEXT NULL,
+        game_time TEXT NULL,
+        ended_at TEXT NULL,
         quarter_history TEXT NOT NULL DEFAULT "[]",
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
@@ -63,6 +66,15 @@ function db(): PDO
     }
     if (!in_array('timeouts_away', $columns, true)) {
         $pdo->exec('ALTER TABLE games ADD COLUMN timeouts_away INTEGER NOT NULL DEFAULT 0');
+    }
+    if (!in_array('game_date', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN game_date TEXT NULL');
+    }
+    if (!in_array('game_time', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN game_time TEXT NULL');
+    }
+    if (!in_array('ended_at', $columns, true)) {
+        $pdo->exec('ALTER TABLE games ADD COLUMN ended_at TEXT NULL');
     }
 
     $pdo->exec('CREATE TABLE IF NOT EXISTS players (
