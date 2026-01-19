@@ -190,9 +190,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $playerId = (int)($_POST['player_id'] ?? 0);
         $name = trim((string)($_POST['name'] ?? ''));
         $number = trim((string)($_POST['number'] ?? ''));
-        if ($playerId > 0 && $name !== '' && mb_strlen($name) <= 40 && mb_strlen($number) <= 10) {
-            $stmt = $db->prepare('UPDATE players SET name = ?, number = ? WHERE id = ? AND game_id = ?');
-            $stmt->execute([$name, $number !== '' ? $number : null, $playerId, $gameId]);
+        if ($playerId > 0 && mb_strlen($name) <= 40 && mb_strlen($number) <= 10) {
+            $stmt = $db->prepare('SELECT team, (SELECT COUNT(*) FROM players p2 WHERE p2.game_id = players.game_id AND p2.team = players.team AND p2.id <= players.id) AS team_index FROM players WHERE id = ? AND game_id = ?');
+            $stmt->execute([$playerId, $gameId]);
+            $playerInfo = $stmt->fetch();
+            $teamIndex = (int)($playerInfo['team_index'] ?? 0);
+            if ($playerInfo && ($name !== '' || $teamIndex > 5)) {
+                $stmt = $db->prepare('UPDATE players SET name = ?, number = ? WHERE id = ? AND game_id = ?');
+                $stmt->execute([$name, $number !== '' ? $number : null, $playerId, $gameId]);
+            }
         }
         redirect('/admin/control.php?id=' . $gameId);
     }

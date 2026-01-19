@@ -44,12 +44,21 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $homeNumber = trim((string)($homeNumbers[$i] ?? ''));
         $awayNumber = trim((string)($awayNumbers[$i] ?? ''));
 
-        if ($homeName === '' || mb_strlen($homeName) > 40) {
-            $errors[] = 'Alle Heimspieler benötigen einen Namen (max 40 Zeichen).';
+        $requiresName = $i < 5;
+        if ($requiresName && $homeName === '') {
+            $errors[] = 'Die ersten fünf Heimspieler benötigen einen Namen (max 40 Zeichen).';
             break;
         }
-        if ($awayName === '' || mb_strlen($awayName) > 40) {
-            $errors[] = 'Alle Auswärtsspieler benötigen einen Namen (max 40 Zeichen).';
+        if ($homeName !== '' && mb_strlen($homeName) > 40) {
+            $errors[] = 'Heimspielernamen dürfen max 40 Zeichen haben.';
+            break;
+        }
+        if ($requiresName && $awayName === '') {
+            $errors[] = 'Die ersten fünf Auswärtsspieler benötigen einen Namen (max 40 Zeichen).';
+            break;
+        }
+        if ($awayName !== '' && mb_strlen($awayName) > 40) {
+            $errors[] = 'Auswärtsspielernamen dürfen max 40 Zeichen haben.';
             break;
         }
         if ($homeNumber !== '' && mb_strlen($homeNumber) > 10) {

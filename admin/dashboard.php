@@ -48,12 +48,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $homeNumber = trim((string)($homeNumbers[$i] ?? ''));
             $awayNumber = trim((string)($awayNumbers[$i] ?? ''));
 
-            if ($homeName === '' || mb_strlen($homeName) > 40) {
-                $errors[] = 'Alle Heimspieler benötigen einen Namen (max 40 Zeichen).';
+            $requiresName = $i < 5;
+            if ($requiresName && $homeName === '') {
+                $errors[] = 'Die ersten fünf Heimspieler benötigen einen Namen (max 40 Zeichen).';
                 break;
             }
-            if ($awayName === '' || mb_strlen($awayName) > 40) {
-                $errors[] = 'Alle Auswärtsspieler benötigen einen Namen (max 40 Zeichen).';
+            if ($homeName !== '' && mb_strlen($homeName) > 40) {
+                $errors[] = 'Heimspielernamen dürfen max 40 Zeichen haben.';
+                break;
+            }
+            if ($requiresName && $awayName === '') {
+                $errors[] = 'Die ersten fünf Auswärtsspieler benötigen einen Namen (max 40 Zeichen).';
+                break;
+            }
+            if ($awayName !== '' && mb_strlen($awayName) > 40) {
+                $errors[] = 'Auswärtsspielernamen dürfen max 40 Zeichen haben.';
                 break;
             }
             if ($homeNumber !== '' && mb_strlen($homeNumber) > 10) {
@@ -165,7 +174,7 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
                         <?php for ($i = 0; $i < 12; $i++): ?>
                             <div class="player-row">
                                 <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                                <input type="text" name="home_player_name[]" placeholder="Name" required maxlength="40" value="UBC Name<?= $i + 1 ?>">
+                                <input type="text" name="home_player_name[]" placeholder="Name" <?= $i < 5 ? 'required' : '' ?> maxlength="40" value="UBC Name<?= $i + 1 ?>">
                             </div>
                         <?php endfor; ?>
                     </div>
@@ -174,7 +183,7 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
                         <?php for ($i = 0; $i < 12; $i++): ?>
                             <div class="player-row">
                                 <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                                <input type="text" name="away_player_name[]" placeholder="Name" required maxlength="40" value="Gast Name<?= $i + 1 ?>">
+                                <input type="text" name="away_player_name[]" placeholder="Name" <?= $i < 5 ? 'required' : '' ?> maxlength="40" value="Gast Name<?= $i + 1 ?>">
                             </div>
                         <?php endfor; ?>
                     </div>
