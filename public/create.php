@@ -63,7 +63,7 @@ if ($teamAway === '') {
                         <?php for ($i = 0; $i < 12; $i++): ?>
                             <div class="player-row">
                                 <input type="text" name="home_player_number[]" placeholder="#" maxlength="10">
-                                <input type="text" name="home_player_name[]" required maxlength="40" value="<?= e($teamHome) ?> Name<?= $i + 1 ?>">
+                                <input type="text" name="home_player_name[]" <?= $i < 5 ? 'required' : '' ?> maxlength="40" value="<?= e($teamHome) ?> Name<?= $i + 1 ?>">
                             </div>
                         <?php endfor; ?>
                     </div>
@@ -72,7 +72,7 @@ if ($teamAway === '') {
                         <?php for ($i = 0; $i < 12; $i++): ?>
                             <div class="player-row">
                                 <input type="text" name="away_player_number[]" placeholder="#" maxlength="10">
-                                <input type="text" name="away_player_name[]" required maxlength="40" value="<?= e($teamAway) ?> Name<?= $i + 1 ?>">
+                                <input type="text" name="away_player_name[]" <?= $i < 5 ? 'required' : '' ?> maxlength="40" value="<?= e($teamAway) ?> Name<?= $i + 1 ?>">
                             </div>
                         <?php endfor; ?>
                     </div>
