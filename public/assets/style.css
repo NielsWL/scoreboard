@@ -364,6 +364,7 @@ td {
 
 .view-side-home {
     grid-area: home;
+    font-size: 3rem;
 }
 
 .view-center {
