@@ -29,6 +29,9 @@ if ($teamAway === '') {
 <body>
     <header class="topbar">
         <h1>Spiel anlegen</h1>
+        <div class="topbar-logo">
+            <img src="/public/logo/Logo_UBC_230px.png" alt="UBC Logo">
+        </div>
         <nav>
             <a href="/index.html">Start</a>
             <a href="/admin/login.php">Admin</a>

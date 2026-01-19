@@ -18,6 +18,9 @@ $games = $db->query("SELECT * FROM games WHERE status = 'active' ORDER BY create
 <body>
     <header class="topbar">
         <h1>Aktive Spiele</h1>
+        <div class="topbar-logo">
+            <img src="/public/logo/Logo_UBC_230px.png" alt="UBC Logo">
+        </div>
         <nav>
             <a href="/index.html">Start</a>
             <a href="/admin/login.php">Admin</a>

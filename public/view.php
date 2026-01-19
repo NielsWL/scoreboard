@@ -112,6 +112,9 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
 <body class="view-page" data-game-id="<?= (int)$gameId ?>">
     <header class="topbar">
         <h1><?= e($game['title']) ?></h1>
+        <div class="topbar-logo">
+            <img src="/public/logo/Logo_UBC_230px.png" alt="UBC Logo">
+        </div>
         <nav>
             <a href="/index.html">Alle Spiele</a>
         </nav>
