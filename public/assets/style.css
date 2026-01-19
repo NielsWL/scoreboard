@@ -280,17 +280,17 @@ td {
 }
 
 .foul-out {
-    color: #b91c1c;
+    color: #111827;
     font-weight: 600;
 }
 
 .foul-out td {
-    background: #fee2e2;
+    background: #fecaca;
 }
 
 .player-list li.foul-out,
 .foul-control-list li.foul-out {
-    background: #fee2e2;
+    background: #fecaca;
     border-radius: 6px;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
@@ -449,23 +449,23 @@ td {
 }
 
 .foul-lamps span.active:nth-child(2) {
-    background: #fbbf24;
-}
-
-.foul-lamps span.active:nth-child(3) {
-    background: #fb923c;
-}
-
-.foul-lamps span.active:nth-child(4) {
     background: #f97316;
 }
 
-.foul-lamps span.active:nth-child(5) {
+.foul-lamps span.active:nth-child(3) {
     background: #ef4444;
 }
 
+.foul-lamps span.active:nth-child(4) {
+    background: #dc2626;
+}
+
+.foul-lamps span.active:nth-child(5) {
+    background: #b91c1c;
+}
+
 .control-page .container {
-    max-width: 1024px;
+    max-width: 100%;
     margin: 1rem auto;
 }
 
@@ -483,6 +483,11 @@ td {
 
 .control-page .button-row {
     gap: 0.4rem;
+}
+
+.control-page button,
+.control-page .button {
+    color: #fff;
 }
 
 .team-panel {
@@ -558,6 +563,7 @@ td {
 
 .view-page .team-stats {
     text-align: center;
+    grid-template-columns: 1fr;
 }
 
 .view-page .score-stat-list .center-stat-row {
@@ -598,6 +604,10 @@ td {
 
     .scoreboard-layout {
         grid-template-columns: 1fr;
+    }
+
+    .control-page .scoreboard-layout {
+        grid-template-columns: minmax(200px, 1fr) minmax(320px, 2fr) minmax(200px, 1fr);
     }
 }
 
