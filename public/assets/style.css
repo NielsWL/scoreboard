@@ -446,12 +446,12 @@ td {
 
 .foul-lamps {
     display: flex;
-    gap: 4px;
+    gap: 10px;
 }
 
 .foul-lamps span {
-    width: 14px;
-    height: 14px;
+    width: 35px;
+    height: 35px;
     border-radius: 999px;
     background: #e5e7eb;
     display: inline-block;
