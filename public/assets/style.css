@@ -118,6 +118,10 @@ a {
     font-size: 1.8rem;
 }
 
+.view-page .half-row{
+    font-size: 3rem;
+}
+
 .score-grid {
     grid-template-columns: minmax(220px, 1fr) minmax(80px, auto) minmax(220px, 1fr);
     align-items: start;
