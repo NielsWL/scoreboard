@@ -134,6 +134,14 @@
         }).join('');
     };
 
+    const updateTeamFoulWarning = (element, value) => {
+        if (!element) {
+            return;
+        }
+        const total = Number(value) || 0;
+        element.classList.toggle('team-fouls-warning', total >= 5);
+    };
+
     const updateView = async () => {
         try {
             const response = await fetch(`/admin/api.php?action=get&id=${gameId}`);
@@ -157,8 +165,14 @@
             const teamFoulsAway = document.querySelector('[data-team-fouls-away]');
             const timeoutsHome = document.querySelector('[data-timeouts-home]');
             const timeoutsAway = document.querySelector('[data-timeouts-away]');
-            if (teamFoulsHome) teamFoulsHome.textContent = game.team_fouls_home;
-            if (teamFoulsAway) teamFoulsAway.textContent = game.team_fouls_away;
+            if (teamFoulsHome) {
+                teamFoulsHome.textContent = game.team_fouls_home;
+                updateTeamFoulWarning(teamFoulsHome, game.team_fouls_home);
+            }
+            if (teamFoulsAway) {
+                teamFoulsAway.textContent = game.team_fouls_away;
+                updateTeamFoulWarning(teamFoulsAway, game.team_fouls_away);
+            }
             if (timeoutsHome) timeoutsHome.textContent = game.timeouts_home;
             if (timeoutsAway) timeoutsAway.textContent = game.timeouts_away;
 

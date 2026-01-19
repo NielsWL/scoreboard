@@ -255,8 +255,9 @@ foreach ($history as $entry) {
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="action" value="foul_adjust">
                                 <input type="hidden" name="player_id" value="<?= (int)$player['id'] ?>">
-                                <button name="delta" value="1" class="small-button">➕</button>
+                                <button name="delta" value="1" class="small-button">+</button>
                                 <button name="delta" value="-1" class="secondary small-button">➖</button>
+                                <span class="foul-count"><?= (int)$player['fouls'] ?></span>
                             </form>
                         </li>
                     <?php endforeach; ?>
@@ -271,9 +272,9 @@ foreach ($history as $entry) {
                             <?= csrf_field() ?>
                             <input type="hidden" name="action" value="score">
                             <input type="hidden" name="team" value="home">
-                            <button name="delta" value="1" class="small-button">➕1</button>
-                            <button name="delta" value="2" class="small-button">➕2</button>
-                            <button name="delta" value="3" class="small-button">➕3</button>
+                            <button name="delta" value="1" class="small-button">+1</button>
+                            <button name="delta" value="2" class="small-button">+2</button>
+                            <button name="delta" value="3" class="small-button">+3</button>
                             <button name="delta" value="-1" class="secondary small-button">➖1</button>
                         </form>
                     </div>
@@ -284,9 +285,9 @@ foreach ($history as $entry) {
                             <?= csrf_field() ?>
                             <input type="hidden" name="action" value="score">
                             <input type="hidden" name="team" value="away">
-                            <button name="delta" value="1" class="small-button">➕1</button>
-                            <button name="delta" value="2" class="small-button">➕2</button>
-                            <button name="delta" value="3" class="small-button">➕3</button>
+                            <button name="delta" value="1" class="small-button">+1</button>
+                            <button name="delta" value="2" class="small-button">+2</button>
+                            <button name="delta" value="3" class="small-button">+3</button>
                             <button name="delta" value="-1" class="secondary small-button">➖1</button>
                         </form>
                     </div>
@@ -311,6 +312,37 @@ foreach ($history as $entry) {
                         </form>
                     </div>
                 </div>
+                <div class="team-stats center-stat-list score-stat-list">
+                    <div class="center-stat-row">
+                        <strong class="center-stat-value <?= $teamFoulsHome >= 5 ? 'team-fouls-warning' : '' ?>"><?= $teamFoulsHome ?></strong>
+                        <span class="center-stat-label">Teamfouls</span>
+                        <strong class="center-stat-value <?= $teamFoulsAway >= 5 ? 'team-fouls-warning' : '' ?>"><?= $teamFoulsAway ?></strong>
+                    </div>
+                    <div class="center-stat-row">
+                        <div class="center-stat-side">
+                            <strong class="center-stat-value"><?= (int)$game['timeouts_home'] ?></strong>
+                            <form method="post" class="button-grid compact center-stat-buttons">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="timeout_adjust">
+                                <input type="hidden" name="team" value="home">
+                                <button name="delta" value="1" class="small-button">+</button>
+                                <button name="delta" value="-1" class="secondary small-button">➖</button>
+                            </form>
+                        </div>
+                        <span class="center-stat-label">Timeouts</span>
+                        <div class="center-stat-side">
+                            <strong class="center-stat-value"><?= (int)$game['timeouts_away'] ?></strong>
+                            <form method="post" class="button-grid compact center-stat-buttons">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="timeout_adjust">
+                                <input type="hidden" name="team" value="away">
+                                <button name="delta" value="1" class="small-button">+</button>
+                                <button name="delta" value="-1" class="secondary small-button">➖</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <p class="muted">Teamfouls werden automatisch pro Viertel aus den Spielerfouls berechnet.</p>
             </section>
             <section class="card foul-side control-side">
                 <h3><?= e($game['team_away']) ?></h3>
@@ -322,8 +354,9 @@ foreach ($history as $entry) {
                                 <?= csrf_field() ?>
                                 <input type="hidden" name="action" value="foul_adjust">
                                 <input type="hidden" name="player_id" value="<?= (int)$player['id'] ?>">
-                                <button name="delta" value="1" class="small-button">➕</button>
+                                <button name="delta" value="1" class="small-button">+</button>
                                 <button name="delta" value="-1" class="secondary small-button">➖</button>
+                                <span class="foul-count"><?= (int)$player['fouls'] ?></span>
                             </form>
                         </li>
                     <?php endforeach; ?>
@@ -359,41 +392,6 @@ foreach ($history as $entry) {
                     </tbody>
                 </table>
             <?php endif; ?>
-        </section>
-
-        <section class="card">
-            <h2>Teamfouls &amp; Timeouts</h2>
-            <div class="center-stat-list">
-                <div class="center-stat-row">
-                    <strong class="center-stat-value"><?= $teamFoulsHome ?></strong>
-                    <span class="center-stat-label">Teamfouls</span>
-                    <strong class="center-stat-value"><?= $teamFoulsAway ?></strong>
-                </div>
-                <div class="center-stat-row">
-                    <div class="center-stat-side">
-                        <strong class="center-stat-value"><?= (int)$game['timeouts_home'] ?></strong>
-                        <form method="post" class="button-grid compact center-stat-buttons">
-                            <?= csrf_field() ?>
-                            <input type="hidden" name="action" value="timeout_adjust">
-                            <input type="hidden" name="team" value="home">
-                            <button name="delta" value="1" class="small-button">➕</button>
-                            <button name="delta" value="-1" class="secondary small-button">➖</button>
-                        </form>
-                    </div>
-                    <span class="center-stat-label">Timeouts</span>
-                    <div class="center-stat-side">
-                        <strong class="center-stat-value"><?= (int)$game['timeouts_away'] ?></strong>
-                        <form method="post" class="button-grid compact center-stat-buttons">
-                            <?= csrf_field() ?>
-                            <input type="hidden" name="action" value="timeout_adjust">
-                            <input type="hidden" name="team" value="away">
-                            <button name="delta" value="1" class="small-button">➕</button>
-                            <button name="delta" value="-1" class="secondary small-button">➖</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <p class="muted">Teamfouls werden automatisch pro Viertel aus den Spielerfouls berechnet.</p>
         </section>
 
         <section class="card">
