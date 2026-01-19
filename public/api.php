@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 $db = db();
 $config = config();
@@ -102,6 +103,7 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $playerStmt->execute([$gameId, $player['team'], $player['number'] !== '' ? $player['number'] : null, $player['name']]);
     }
     $db->commit();
+    grant_game_access($gameId);
 
     echo json_encode([
         'game_id' => $gameId,

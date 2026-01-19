@@ -116,7 +116,7 @@ if ($gameTime === '') {
                     resultEl.textContent = payload.error || 'Fehler beim Anlegen.';
                     return;
                 }
-                resultEl.innerHTML = `Steuer-Passwort: <strong>${payload.password}</strong> (Spiel #${payload.game_id})`;
+                window.location.href = `/admin/control.php?id=${payload.game_id}`;
             } catch (error) {
                 resultEl.textContent = 'Fehler beim Anlegen.';
             }

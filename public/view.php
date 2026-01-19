@@ -100,6 +100,15 @@ $teamFoulsAway = max(0, $awayFoulsTotal - $awayBaseline);
 $halftimeScore = $entriesByPeriod[2] ?? null;
 $fulltimeScore = $entriesByPeriod[4] ?? null;
 $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
+$gameDateLabel = '';
+$rawDate = (string)($game['game_date'] ?? '');
+$rawTime = (string)($game['game_time'] ?? '');
+if ($rawDate !== '' && $rawTime !== '') {
+    $dateTime = DateTime::createFromFormat('Y-m-d H:i', $rawDate . ' ' . $rawTime);
+    if ($dateTime instanceof DateTime) {
+        $gameDateLabel = $dateTime->format('d.m.Y, H:i') . ' Uhr';
+    }
+}
 
 ?>
 <!doctype html>
@@ -113,7 +122,9 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
     <header class="topbar">
         <h1><?= e($game['title']) ?></h1>
         <div class="topbar-logo">
+            <span class="topbar-meta">scoreboard.pascalgymnasium.de</span>
             <img src="/public/logo/Logo_UBC_230px.png" alt="UBC Logo">
+            <span class="topbar-meta"><?= e($gameDateLabel) ?></span>
         </div>
         <nav>
             <a href="/index.html">Alle Spiele</a>

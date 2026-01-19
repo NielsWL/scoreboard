@@ -632,9 +632,23 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
     </main>
     <script>
         const toggleButton = document.getElementById('toggle-minus');
-        toggleButton.addEventListener('click', () => {
-            document.body.classList.toggle('show-negative');
+        const storageKey = 'scoreboard.showNegative';
+        const setShowNegative = (enabled) => {
+            document.body.classList.toggle('show-negative', enabled);
             toggleButton.textContent = '-';
+            if (window.localStorage) {
+                if (enabled) {
+                    window.localStorage.setItem(storageKey, '1');
+                } else {
+                    window.localStorage.removeItem(storageKey);
+                }
+            }
+        };
+        const storedValue = window.localStorage ? window.localStorage.getItem(storageKey) : null;
+        setShowNegative(storedValue === '1');
+        toggleButton.addEventListener('click', () => {
+            const enabled = !document.body.classList.contains('show-negative');
+            setShowNegative(enabled);
         });
     </script>
 </body>
