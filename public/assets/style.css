@@ -364,7 +364,14 @@ td {
 
 .view-side-home {
     grid-area: home;
-    font-size: 3rem;
+}
+
+.view-side-home h2{
+    font-size: 2.7rem;
+}
+
+.view-side-away h2{
+    font-size: 2.7rem;
 }
 
 .view-center {
@@ -373,7 +380,6 @@ td {
 
 .view-side-away {
     grid-area: away;
-    font-size: 3rem;
 }
 
 .view-center {
