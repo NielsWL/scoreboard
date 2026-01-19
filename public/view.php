@@ -209,7 +209,7 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
                             </tr>
                         </tbody>
                     </table>
-                    <p class="muted">Hinweis: Viertelwerte werden aus kumulativ gespeicherten Endständen berechnet.</p>
+                    <p class="muted"></p>
                 </div>
             </section>
 

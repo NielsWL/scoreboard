@@ -427,7 +427,7 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
                         </tr>
                     </tbody>
                 </table>
-                <p class="muted">Hinweis: Viertelwerte werden aus kumulativ gespeicherten Endständen berechnet.</p>
+                <p class="muted"></p>
                 <h3>Kumulativ</h3>
                 <table class="quarter-table">
                     <thead>
