@@ -7,6 +7,8 @@ require_once __DIR__ . '/../includes/helpers.php';
 $title = trim((string)($_GET['title'] ?? 'Spiel UBC vs Gast'));
 $teamHome = trim((string)($_GET['team_home'] ?? 'UBC'));
 $teamAway = trim((string)($_GET['team_away'] ?? 'Gast'));
+$gameDate = trim((string)($_GET['game_date'] ?? date('Y-m-d')));
+$gameTime = trim((string)($_GET['game_time'] ?? date('H:i')));
 
 if ($title === '') {
     $title = 'Spiel UBC vs Gast';
@@ -16,6 +18,12 @@ if ($teamHome === '') {
 }
 if ($teamAway === '') {
     $teamAway = 'Gast';
+}
+if ($gameDate === '') {
+    $gameDate = date('Y-m-d');
+}
+if ($gameTime === '') {
+    $gameTime = date('H:i');
 }
 ?>
 <!doctype html>
@@ -54,6 +62,14 @@ if ($teamAway === '') {
                     <label>
                         Auswärtsteam
                         <input type="text" name="team_away" required maxlength="40" value="<?= e($teamAway) ?>">
+                    </label>
+                    <label>
+                        Datum
+                        <input type="date" name="game_date" required value="<?= e($gameDate) ?>">
+                    </label>
+                    <label>
+                        Uhrzeit
+                        <input type="time" name="game_time" required value="<?= e($gameTime) ?>">
                     </label>
                 </div>
 

@@ -12,7 +12,7 @@ header('Content-Type: application/json');
 
 $action = $_GET['action'] ?? '';
 if ($action === 'list') {
-    $games = $db->query("SELECT id, title, team_home, team_away, home_score, away_score, status FROM games WHERE status = 'active' ORDER BY created_at DESC")->fetchAll();
+    $games = $db->query("SELECT id, title, team_home, team_away, home_score, away_score, status FROM games WHERE status = 'active' OR (status = 'ended' AND ended_at IS NOT NULL AND julianday(ended_at) >= julianday('now', '-2 days')) ORDER BY created_at DESC")->fetchAll();
     echo json_encode(['games' => $games]);
     exit;
 }
@@ -21,6 +21,8 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim((string)($_POST['title'] ?? ''));
     $teamHome = trim((string)($_POST['team_home'] ?? ''));
     $teamAway = trim((string)($_POST['team_away'] ?? ''));
+    $gameDate = trim((string)($_POST['game_date'] ?? ''));
+    $gameTime = trim((string)($_POST['game_time'] ?? ''));
     $homeNames = $_POST['home_player_name'] ?? [];
     $awayNames = $_POST['away_player_name'] ?? [];
     $homeNumbers = $_POST['home_player_number'] ?? [];
@@ -35,6 +37,12 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($teamAway === '' || mb_strlen($teamAway) > 40) {
         $errors[] = 'Auswärtsteam ist erforderlich (max 40 Zeichen).';
+    }
+    if ($gameDate === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $gameDate)) {
+        $errors[] = 'Datum ist erforderlich (Format YYYY-MM-DD).';
+    }
+    if ($gameTime === '' || !preg_match('/^\d{2}:\d{2}$/', $gameTime)) {
+        $errors[] = 'Uhrzeit ist erforderlich (Format HH:MM).';
     }
 
     $players = [];
@@ -84,9 +92,9 @@ if ($action === 'create' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
     $db->beginTransaction();
-    $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, control_password_plain, team_fouls_home, team_fouls_away, timeouts_home, timeouts_away, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, 0, 0, 0, ?, ?)');
+    $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, control_password_plain, team_fouls_home, team_fouls_away, timeouts_home, timeouts_away, game_date, game_time, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, 0, 0, 0, ?, ?, ?, ?)');
     $now = now_iso();
-    $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $password, $now, $now]);
+    $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $password, $gameDate, $gameTime, $now, $now]);
     $gameId = (int)$db->lastInsertId();
 
     $playerStmt = $db->prepare('INSERT INTO players (game_id, team, number, name, fouls, active) VALUES (?, ?, ?, ?, 0, 1)');

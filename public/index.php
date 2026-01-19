@@ -6,18 +6,18 @@ require_once __DIR__ . '/../includes/db.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
 $db = db();
-$games = $db->query("SELECT * FROM games WHERE status = 'active' ORDER BY created_at DESC")->fetchAll();
+$games = $db->query("SELECT * FROM games WHERE status = 'active' OR (status = 'ended' AND ended_at IS NOT NULL AND julianday(ended_at) >= julianday('now', '-2 days')) ORDER BY created_at DESC")->fetchAll();
 ?>
 <!doctype html>
 <html lang="de">
 <head>
     <meta charset="utf-8">
-    <title>Aktive Spiele</title>
+    <title>Aktuelle Spiele</title>
     <link rel="stylesheet" href="/public/assets/style.css">
 </head>
 <body>
     <header class="topbar">
-        <h1>Aktive Spiele</h1>
+        <h1>Aktuelle Spiele</h1>
         <div class="topbar-logo">
             <img src="/public/logo/Logo_UBC_230px.png" alt="UBC Logo">
         </div>
@@ -29,7 +29,7 @@ $games = $db->query("SELECT * FROM games WHERE status = 'active' ORDER BY create
 
     <main class="container">
         <?php if (empty($games)): ?>
-            <p>Keine aktiven Spiele.</p>
+            <p>Keine aktuellen Spiele.</p>
         <?php else: ?>
             <div class="game-list">
                 <?php foreach ($games as $game): ?>

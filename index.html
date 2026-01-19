@@ -41,7 +41,7 @@
         </section>
 
         <section class="card">
-            <h2>Aktive Spiele</h2>
+            <h2>Aktuelle Spiele</h2>
             <div id="game-list" class="game-list"></div>
         </section>
     </main>
@@ -50,7 +50,7 @@
         const listEl = document.getElementById('game-list');
         const renderGames = (games = []) => {
             if (!games.length) {
-                listEl.innerHTML = '<p>Keine aktiven Spiele.</p>';
+                listEl.innerHTML = '<p>Keine aktuellen Spiele.</p>';
                 return;
             }
             listEl.innerHTML = games.map((game) => `

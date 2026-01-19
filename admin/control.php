@@ -47,6 +47,25 @@ function sum_team_fouls(array $players, string $team): int
     return $sum;
 }
 
+function upsert_history_entry(array $history, int $period, int $homeScore, int $awayScore, int $homeFouls, int $awayFouls): array
+{
+    $entry = [
+        'period' => $period,
+        'home' => $homeScore,
+        'away' => $awayScore,
+        'fouls_home_total' => $homeFouls,
+        'fouls_away_total' => $awayFouls,
+    ];
+    foreach ($history as $index => $item) {
+        if ((int)($item['period'] ?? 0) === $period) {
+            $history[$index] = $entry;
+            return array_values($history);
+        }
+    }
+    $history[] = $entry;
+    return array_values($history);
+}
+
 function foul_baseline(array $history, string $team): int
 {
     $key = $team === 'home' ? 'fouls_home_total' : 'fouls_away_total';
@@ -171,17 +190,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'end_game') {
-        $stmt = $db->prepare('UPDATE games SET status = ?, updated_at = ? WHERE id = ?');
-        $stmt->execute(['ended', now_iso(), $gameId]);
+        $history = json_decode($game['quarter_history'], true);
+        if (!is_array($history)) {
+            $history = [];
+        }
+        $playerStmt = $db->prepare('SELECT team, fouls FROM players WHERE game_id = ?');
+        $playerStmt->execute([$gameId]);
+        $playersForTotals = $playerStmt->fetchAll();
+        $homeTotal = sum_team_fouls($playersForTotals, 'home');
+        $awayTotal = sum_team_fouls($playersForTotals, 'away');
+        $history = upsert_history_entry(
+            $history,
+            (int)$game['period'],
+            (int)$game['home_score'],
+            (int)$game['away_score'],
+            $homeTotal,
+            $awayTotal
+        );
+        $now = now_iso();
+        $stmt = $db->prepare('UPDATE games SET status = ?, ended_at = ?, quarter_history = ?, updated_at = ? WHERE id = ?');
+        $stmt->execute(['ended', $now, json_encode($history), $now, $gameId]);
+        redirect('/admin/control.php?id=' . $gameId);
+    }
+
+    if ($action === 'reopen_game') {
+        $stmt = $db->prepare('UPDATE games SET status = ?, ended_at = NULL, updated_at = ? WHERE id = ?');
+        $stmt->execute(['active', now_iso(), $gameId]);
         redirect('/admin/control.php?id=' . $gameId);
     }
 
     if ($action === 'update_teams') {
         $teamHome = trim((string)($_POST['team_home'] ?? ''));
         $teamAway = trim((string)($_POST['team_away'] ?? ''));
-        if ($teamHome !== '' && $teamAway !== '' && mb_strlen($teamHome) <= 40 && mb_strlen($teamAway) <= 40) {
-            $stmt = $db->prepare('UPDATE games SET team_home = ?, team_away = ?, updated_at = ? WHERE id = ?');
-            $stmt->execute([$teamHome, $teamAway, now_iso(), $gameId]);
+        $gameDate = trim((string)($_POST['game_date'] ?? ''));
+        $gameTime = trim((string)($_POST['game_time'] ?? ''));
+        if (
+            $teamHome !== '' && $teamAway !== ''
+            && mb_strlen($teamHome) <= 40 && mb_strlen($teamAway) <= 40
+            && preg_match('/^\d{4}-\d{2}-\d{2}$/', $gameDate)
+            && preg_match('/^\d{2}:\d{2}$/', $gameTime)
+        ) {
+            $stmt = $db->prepare('UPDATE games SET team_home = ?, team_away = ?, game_date = ?, game_time = ?, updated_at = ? WHERE id = ?');
+            $stmt->execute([$teamHome, $teamAway, $gameDate, $gameTime, now_iso(), $gameId]);
         }
         redirect('/admin/control.php?id=' . $gameId);
     }
@@ -478,6 +528,14 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
                     Auswärtsteam
                     <input type="text" name="team_away" value="<?= e($game['team_away']) ?>" maxlength="40" required>
                 </label>
+                <label>
+                    Datum
+                    <input type="date" name="game_date" value="<?= e((string)($game['game_date'] ?? '')) ?>" required>
+                </label>
+                <label>
+                    Uhrzeit
+                    <input type="time" name="game_time" value="<?= e((string)($game['game_time'] ?? '')) ?>" required>
+                </label>
                 <button type="submit">Speichern</button>
             </form>
         </section>
@@ -485,11 +543,19 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
         <section class="card">
             <h2>Steuer-Passwort</h2>
             <p><strong><?= e((string)($game['control_password_plain'] ?? '')) ?></strong></p>
-            <form method="post" class="inline end-game-row" onsubmit="return confirm('Spiel wirklich beenden?');">
-                <?= csrf_field() ?>
-                <input type="hidden" name="action" value="end_game">
-                <button type="submit" class="danger small-button">🛑 Spiel beenden</button>
-            </form>
+            <?php if ($game['status'] === 'ended'): ?>
+                <form method="post" class="inline end-game-row" onsubmit="return confirm('Spielende wirklich zurücknehmen?');">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" value="reopen_game">
+                    <button type="submit" class="secondary small-button">↩ Spielende zurücknehmen</button>
+                </form>
+            <?php else: ?>
+                <form method="post" class="inline end-game-row" onsubmit="return confirm('Spiel wirklich beenden?');">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" value="end_game">
+                    <button type="submit" class="danger small-button">🛑 Spiel beenden</button>
+                </form>
+            <?php endif; ?>
         </section>
 
         <section class="card">

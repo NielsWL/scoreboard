@@ -12,6 +12,8 @@ start_session();
 
 $db = db();
 $config = config();
+$defaultDate = date('Y-m-d');
+$defaultTime = date('H:i');
 
 $error = '';
 $createdPassword = $_SESSION['last_game_password'] ?? null;
@@ -25,6 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $title = trim((string)($_POST['title'] ?? ''));
         $teamHome = trim((string)($_POST['team_home'] ?? ''));
         $teamAway = trim((string)($_POST['team_away'] ?? ''));
+        $gameDate = trim((string)($_POST['game_date'] ?? ''));
+        $gameTime = trim((string)($_POST['game_time'] ?? ''));
         $homeNames = $_POST['home_player_name'] ?? [];
         $awayNames = $_POST['away_player_name'] ?? [];
         $homeNumbers = $_POST['home_player_number'] ?? [];
@@ -39,6 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if ($teamAway === '' || mb_strlen($teamAway) > 40) {
             $errors[] = 'Auswärtsteam ist erforderlich (max 40 Zeichen).';
+        }
+        if ($gameDate === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $gameDate)) {
+            $errors[] = 'Datum ist erforderlich (Format YYYY-MM-DD).';
+        }
+        if ($gameTime === '' || !preg_match('/^\d{2}:\d{2}$/', $gameTime)) {
+            $errors[] = 'Uhrzeit ist erforderlich (Format HH:MM).';
         }
 
         $players = [];
@@ -82,9 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $password = generate_game_password(10);
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
             $db->beginTransaction();
-            $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, control_password_plain, team_fouls_home, team_fouls_away, timeouts_home, timeouts_away, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, 0, 0, 0, ?, ?)');
+            $stmt = $db->prepare('INSERT INTO games (title, team_home, team_away, clock_seconds, control_password_hash, control_password_plain, team_fouls_home, team_fouls_away, timeouts_home, timeouts_away, game_date, game_time, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, 0, 0, 0, ?, ?, ?, ?)');
             $now = now_iso();
-            $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $password, $now, $now]);
+            $stmt->execute([$title, $teamHome, $teamAway, (int)$config['QUARTER_SECONDS'], $passwordHash, $password, $gameDate, $gameTime, $now, $now]);
             $gameId = (int)$db->lastInsertId();
 
             $playerStmt = $db->prepare('INSERT INTO players (game_id, team, number, name, fouls, active) VALUES (?, ?, ?, ?, 0, 1)');
@@ -165,6 +175,14 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
                     <label>
                         Auswärtsteam
                         <input type="text" name="team_away" required maxlength="40">
+                    </label>
+                    <label>
+                        Datum
+                        <input type="date" name="game_date" required value="<?= e($defaultDate) ?>">
+                    </label>
+                    <label>
+                        Uhrzeit
+                        <input type="time" name="game_time" required value="<?= e($defaultTime) ?>">
                     </label>
                 </div>
 
