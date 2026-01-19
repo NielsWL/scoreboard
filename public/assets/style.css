@@ -30,6 +30,9 @@ a {
 
 .topbar-logo {
     justify-self: center;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 .topbar-logo img {
@@ -45,6 +48,12 @@ a {
 .topbar nav a {
     margin-left: 1rem;
     color: #fff;
+}
+
+.topbar-meta {
+    font-size: 0.85rem;
+    color: #e5e7eb;
+    white-space: nowrap;
 }
 
 .container {
