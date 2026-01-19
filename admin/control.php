@@ -279,9 +279,6 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
     </header>
 
     <main class="container">
-        <section class="card control-toggle-card">
-            <button type="button" class="secondary small-button" id="toggle-minus">- Buttons einblenden</button>
-        </section>
         <section class="scoreboard-layout control-scoreboard">
             <section class="card foul-side control-side">
                 <h3><?= e($game['team_home']) ?></h3>
@@ -302,7 +299,7 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
                 </ul>
             </section>
             <section class="card scoreboard-center">
-                <div class="score-block">
+                <div class="score-block score-grid">
                     <div>
                         <h2><?= e($game['team_home']) ?></h2>
                         <div class="score"><?= (int)$game['home_score'] ?></div>
@@ -315,6 +312,9 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
                             <button name="delta" value="3" class="small-button">+3</button>
                             <button name="delta" value="-1" class="secondary small-button">➖1</button>
                         </form>
+                    </div>
+                    <div class="score-toggle">
+                        <button type="button" class="secondary small-button toggle-minus-button" id="toggle-minus">-</button>
                     </div>
                     <div>
                         <h2><?= e($game['team_away']) ?></h2>
@@ -558,8 +558,8 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
     <script>
         const toggleButton = document.getElementById('toggle-minus');
         toggleButton.addEventListener('click', () => {
-            const isVisible = document.body.classList.toggle('show-negative');
-            toggleButton.textContent = isVisible ? '- Buttons ausblenden' : '- Buttons einblenden';
+            document.body.classList.toggle('show-negative');
+            toggleButton.textContent = '-';
         });
     </script>
 </body>
