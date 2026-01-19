@@ -599,11 +599,23 @@ td {
 }
 
 .control-page .score-block {
-    grid-template-columns: repeat(2, minmax(160px, 1fr));
+    grid-template-columns: minmax(160px, 1fr) minmax(80px, auto) minmax(160px, 1fr);
 }
 
 .control-page .scoreboard-layout {
-    grid-template-columns: minmax(260px, 1.3fr) minmax(240px, 1fr) minmax(260px, 1.3fr);
+    grid-template-columns: minmax(220px, 1.1fr) minmax(220px, 1fr) minmax(220px, 1.1fr);
+}
+
+.control-page .score-toggle {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 0.4rem;
+}
+
+.control-page .toggle-minus-button {
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
 }
 
 .foul-buttons .small-button,
@@ -645,6 +657,19 @@ td {
     font-size: 1.1rem;
 }
 
+.view-page .player-list li {
+    padding: 0.52rem 0;
+}
+
+.view-page .half-row {
+    font-size: 1.1rem;
+}
+
+.view-page .quarter-table th,
+.view-page .quarter-table td {
+    font-size: 1.1rem;
+}
+
 @media (max-width: 1100px) {
     .view-shell {
         width: 100%;
@@ -674,7 +699,7 @@ td {
     }
 
     .control-page .scoreboard-layout {
-        grid-template-columns: minmax(260px, 1.3fr) minmax(240px, 1fr) minmax(260px, 1.3fr);
+        grid-template-columns: minmax(210px, 1fr) minmax(190px, 1fr) minmax(210px, 1fr);
     }
 }
 
@@ -688,7 +713,7 @@ td {
     }
 
     .control-page .scoreboard-layout {
-        grid-template-columns: minmax(220px, 1fr) minmax(200px, 1fr) minmax(220px, 1fr);
+        grid-template-columns: minmax(200px, 1fr) minmax(180px, 1fr) minmax(200px, 1fr);
         gap: 1rem;
     }
 
