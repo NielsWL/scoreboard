@@ -482,7 +482,7 @@ td {
 }
 
 .control-page {
-    font-size: 14px;
+    font-size: 12px;
 }
 
 .control-page .card {
@@ -581,7 +581,25 @@ td {
     grid-template-columns: repeat(2, minmax(160px, 1fr));
 }
 
+.control-page .scoreboard-layout {
+    grid-template-columns: minmax(260px, 1.3fr) minmax(240px, 1fr) minmax(260px, 1.3fr);
+}
+
+.foul-buttons .small-button,
+.center-stat-buttons .small-button {
+    min-width: 2.2rem;
+    text-align: center;
+}
+
 .team-fouls-warning {
+    background: #fee2e2;
+    color: #991b1b;
+    border-radius: 8px;
+    padding: 0.1rem 0.5rem;
+    display: inline-block;
+}
+
+.timeouts-warning {
     background: #fee2e2;
     color: #991b1b;
     border-radius: 8px;
@@ -635,7 +653,7 @@ td {
     }
 
     .control-page .scoreboard-layout {
-        grid-template-columns: minmax(200px, 1fr) minmax(320px, 2fr) minmax(200px, 1fr);
+        grid-template-columns: minmax(260px, 1.3fr) minmax(240px, 1fr) minmax(260px, 1.3fr);
     }
 }
 
