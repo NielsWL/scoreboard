@@ -669,11 +669,11 @@ td {
 }
 
 .view-page .score-stat-list .center-stat-value {
-    font-size: 1.8rem;
+    font-size: 3.6rem;
 }
 
 .view-page .score-stat-list .center-stat-label {
-    font-size: 1.1rem;
+    font-size: 2.2rem;
 }
 
 .view-page .player-list li {
@@ -681,12 +681,12 @@ td {
 }
 
 .view-page .half-row {
-    font-size: 1.1rem;
+    font-size: 3.3rem;
 }
 
 .view-page .quarter-table th,
 .view-page .quarter-table td {
-    font-size: 1.1rem;
+    font-size: 3.3rem;
 }
 
 .view-page .view-history {
