@@ -485,6 +485,27 @@ td {
     font-size: 12px;
 }
 
+.control-page .refresh-link {
+    font-weight: 600;
+}
+
+.control-toggle-card {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.control-page button[value="-1"] {
+    display: none;
+}
+
+.control-page.show-negative button[value="-1"] {
+    display: inline-flex;
+}
+
+.end-game-row {
+    margin-top: 0.75rem;
+}
+
 .control-page .card {
     padding: 1rem;
 }
@@ -654,6 +675,33 @@ td {
 
     .control-page .scoreboard-layout {
         grid-template-columns: minmax(260px, 1.3fr) minmax(240px, 1fr) minmax(260px, 1.3fr);
+    }
+}
+
+@media (max-width: 1024px) {
+    .control-page {
+        font-size: 11px;
+    }
+
+    .control-page .card {
+        padding: 0.75rem;
+    }
+
+    .control-page .scoreboard-layout {
+        grid-template-columns: minmax(220px, 1fr) minmax(200px, 1fr) minmax(220px, 1fr);
+        gap: 1rem;
+    }
+
+    .control-page .foul-control-list {
+        gap: 0.3rem;
+    }
+
+    .control-page .foul-control-list li {
+        padding: 0.25rem 0;
+    }
+
+    .control-page .foul-player {
+        font-size: 0.8rem;
     }
 }
 

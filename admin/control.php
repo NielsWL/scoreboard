@@ -273,11 +273,15 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
         <nav>
             <a href="/admin/dashboard.php">Dashboard</a>
             <a href="/public/view.php?id=<?= (int)$gameId ?>" target="_blank">Public View</a>
+            <a class="refresh-link" href="" title="Aktualisieren" onclick="window.location.reload(); return false;">↻ Aktualisieren</a>
             <a href="/admin/logout.php">Logout</a>
         </nav>
     </header>
 
     <main class="container">
+        <section class="card control-toggle-card">
+            <button type="button" class="secondary small-button" id="toggle-minus">- Buttons einblenden</button>
+        </section>
         <section class="scoreboard-layout control-scoreboard">
             <section class="card foul-side control-side">
                 <h3><?= e($game['team_home']) ?></h3>
@@ -338,11 +342,6 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
                             <?= csrf_field() ?>
                             <input type="hidden" name="action" value="delete_last_quarter">
                             <button type="submit" class="secondary small-button">↩ Letztes Viertel löschen</button>
-                        </form>
-                        <form method="post" class="inline" onsubmit="return confirm('Spiel wirklich beenden?');">
-                            <?= csrf_field() ?>
-                            <input type="hidden" name="action" value="end_game">
-                            <button type="submit" class="danger small-button">🛑 Spiel beenden</button>
                         </form>
                     </div>
                 </div>
@@ -429,23 +428,29 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
                     </tbody>
                 </table>
                 <p class="muted">Hinweis: Viertelwerte werden aus kumulativ gespeicherten Endständen berechnet.</p>
-                <h3>kumulativ</h3>
-                <table>
+                <h3>Kumulativ</h3>
+                <table class="quarter-table">
                     <thead>
                         <tr>
-                            <th>Viertel</th>
-                            <th>Heim (kumulativ)</th>
-                            <th>Gast (kumulativ)</th>
+                            <th>Team</th>
+                            <?php for ($period = 1; $period <= $maxPeriod; $period++): ?>
+                                <th><?= e(period_label($period)) ?></th>
+                            <?php endfor; ?>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($historyRows as $row): ?>
-                            <tr>
-                                <td><?= e(period_label((int)$row['period'])) ?></td>
+                        <tr>
+                            <td><?= e($game['team_home']) ?></td>
+                            <?php foreach ($historyRows as $row): ?>
                                 <td><?= $row['home'] === null ? '-' : (int)$row['home'] ?></td>
+                            <?php endforeach; ?>
+                        </tr>
+                        <tr>
+                            <td><?= e($game['team_away']) ?></td>
+                            <?php foreach ($historyRows as $row): ?>
                                 <td><?= $row['away'] === null ? '-' : (int)$row['away'] ?></td>
-                            </tr>
-                        <?php endforeach; ?>
+                            <?php endforeach; ?>
+                        </tr>
                     </tbody>
                 </table>
             <?php endif; ?>
@@ -471,6 +476,11 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
         <section class="card">
             <h2>Steuer-Passwort</h2>
             <p><strong><?= e((string)($game['control_password_plain'] ?? '')) ?></strong></p>
+            <form method="post" class="inline end-game-row" onsubmit="return confirm('Spiel wirklich beenden?');">
+                <?= csrf_field() ?>
+                <input type="hidden" name="action" value="end_game">
+                <button type="submit" class="danger small-button">🛑 Spiel beenden</button>
+            </form>
         </section>
 
         <section class="card">
@@ -545,5 +555,12 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
             </div>
         </section>
     </main>
+    <script>
+        const toggleButton = document.getElementById('toggle-minus');
+        toggleButton.addEventListener('click', () => {
+            const isVisible = document.body.classList.toggle('show-negative');
+            toggleButton.textContent = isVisible ? '- Buttons ausblenden' : '- Buttons einblenden';
+        });
+    </script>
 </body>
 </html>
