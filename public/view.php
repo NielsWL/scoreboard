@@ -139,32 +139,16 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
                     <div class="period-block">
                         <div class="period" data-period><?= $game['status'] === 'ended' ? 'Spielende' : e(period_label((int)$game['period'])) ?></div>
                     </div>
-                    <div class="team-stats">
-                        <div class="stat-block">
-                            <h3>Teamfouls</h3>
-                            <div class="stat-grid">
-                                <div class="stat-cell">
-                                    <span><?= e($game['team_home']) ?></span>
-                                    <strong data-team-fouls-home><?= $teamFoulsHome ?></strong>
-                                </div>
-                                <div class="stat-cell">
-                                    <span><?= e($game['team_away']) ?></span>
-                                    <strong data-team-fouls-away><?= $teamFoulsAway ?></strong>
-                                </div>
-                            </div>
+                    <div class="team-stats center-stat-list">
+                        <div class="center-stat-row">
+                            <strong class="center-stat-value" data-team-fouls-home><?= $teamFoulsHome ?></strong>
+                            <span class="center-stat-label">Teamfouls</span>
+                            <strong class="center-stat-value" data-team-fouls-away><?= $teamFoulsAway ?></strong>
                         </div>
-                        <div class="stat-block">
-                            <h3>Timeouts</h3>
-                            <div class="stat-grid">
-                                <div class="stat-cell">
-                                    <span><?= e($game['team_home']) ?></span>
-                                    <strong data-timeouts-home><?= (int)$game['timeouts_home'] ?></strong>
-                                </div>
-                                <div class="stat-cell">
-                                    <span><?= e($game['team_away']) ?></span>
-                                    <strong data-timeouts-away><?= (int)$game['timeouts_away'] ?></strong>
-                                </div>
-                            </div>
+                        <div class="center-stat-row">
+                            <strong class="center-stat-value" data-timeouts-home><?= (int)$game['timeouts_home'] ?></strong>
+                            <span class="center-stat-label">Timeouts</span>
+                            <strong class="center-stat-value" data-timeouts-away><?= (int)$game['timeouts_away'] ?></strong>
                         </div>
                     </div>
                     <div class="half-summary">

@@ -52,6 +52,50 @@ a {
     gap: 1.5rem;
 }
 
+.scoreboard-layout {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) minmax(320px, 2fr) minmax(200px, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.scoreboard-center {
+    display: grid;
+    gap: 1rem;
+}
+
+.foul-side h3 {
+    margin-top: 0;
+    text-align: left;
+}
+
+.foul-control-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4rem;
+}
+
+.foul-control-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid #eef2f6;
+}
+
+.foul-player {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.foul-buttons {
+    display: flex;
+    gap: 0.35rem;
+}
+
 .score-block {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -380,7 +424,7 @@ td {
 }
 
 .foul-lamps span.active:nth-child(1) {
-    background: #fde047;
+    background: #f59e0b;
 }
 
 .foul-lamps span.active:nth-child(2) {
@@ -406,6 +450,14 @@ td {
 
 .control-page .card {
     padding: 1rem;
+}
+
+.control-page .topbar {
+    padding: 0.5rem 1.5rem;
+}
+
+.control-page .topbar h1 {
+    font-size: 1.5rem;
 }
 
 .control-page .button-row {
@@ -443,6 +495,42 @@ td {
     font-weight: 700;
 }
 
+.center-stat-list {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.center-stat-row {
+    display: grid;
+    grid-template-columns: minmax(60px, 1fr) auto minmax(60px, 1fr);
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.center-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.center-stat-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #475569;
+}
+
+.center-stat-side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.center-stat-buttons {
+    margin-top: 0.35rem;
+    grid-template-columns: repeat(2, minmax(40px, 1fr));
+}
+
 @media (max-width: 1100px) {
     .view-shell {
         width: 100%;
@@ -464,6 +552,10 @@ td {
 
     .stat-grid,
     .stat-duo {
+        grid-template-columns: 1fr;
+    }
+
+    .scoreboard-layout {
         grid-template-columns: 1fr;
     }
 }

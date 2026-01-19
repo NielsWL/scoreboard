@@ -245,52 +245,90 @@ foreach ($history as $entry) {
 
     <main class="container">
         <section class="card scoreboard">
-            <div class="score-block">
-                <div>
-                    <h2><?= e($game['team_home']) ?></h2>
-                    <div class="score"><?= (int)$game['home_score'] ?></div>
-                    <form method="post" class="button-grid compact">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="action" value="score">
-                        <input type="hidden" name="team" value="home">
-                        <button name="delta" value="1" class="small-button">➕1</button>
-                        <button name="delta" value="2" class="small-button">➕2</button>
-                        <button name="delta" value="3" class="small-button">➕3</button>
-                        <button name="delta" value="-1" class="secondary small-button">➖1</button>
-                    </form>
+            <div class="scoreboard-layout">
+                <div class="foul-side">
+                    <h3><?= e($game['team_home']) ?></h3>
+                    <ul class="foul-control-list">
+                        <?php foreach ($homePlayers as $player): ?>
+                            <li class="<?= (int)$player['fouls'] >= (int)$config['MAX_FOULS'] ? 'foul-out' : '' ?>">
+                                <span class="foul-player"><?= e((string)$player['number']) ?> <?= e($player['name']) ?></span>
+                                <form method="post" class="foul-buttons">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="action" value="foul_adjust">
+                                    <input type="hidden" name="player_id" value="<?= (int)$player['id'] ?>">
+                                    <button name="delta" value="1" class="small-button">➕</button>
+                                    <button name="delta" value="-1" class="secondary small-button">➖</button>
+                                </form>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
-                <div>
-                    <h2><?= e($game['team_away']) ?></h2>
-                    <div class="score"><?= (int)$game['away_score'] ?></div>
-                    <form method="post" class="button-grid compact">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="action" value="score">
-                        <input type="hidden" name="team" value="away">
-                        <button name="delta" value="1" class="small-button">➕1</button>
-                        <button name="delta" value="2" class="small-button">➕2</button>
-                        <button name="delta" value="3" class="small-button">➕3</button>
-                        <button name="delta" value="-1" class="secondary small-button">➖1</button>
-                    </form>
+                <div class="scoreboard-center">
+                    <div class="score-block">
+                        <div>
+                            <h2><?= e($game['team_home']) ?></h2>
+                            <div class="score"><?= (int)$game['home_score'] ?></div>
+                            <form method="post" class="button-grid compact">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="score">
+                                <input type="hidden" name="team" value="home">
+                                <button name="delta" value="1" class="small-button">➕1</button>
+                                <button name="delta" value="2" class="small-button">➕2</button>
+                                <button name="delta" value="3" class="small-button">➕3</button>
+                                <button name="delta" value="-1" class="secondary small-button">➖1</button>
+                            </form>
+                        </div>
+                        <div>
+                            <h2><?= e($game['team_away']) ?></h2>
+                            <div class="score"><?= (int)$game['away_score'] ?></div>
+                            <form method="post" class="button-grid compact">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="score">
+                                <input type="hidden" name="team" value="away">
+                                <button name="delta" value="1" class="small-button">➕1</button>
+                                <button name="delta" value="2" class="small-button">➕2</button>
+                                <button name="delta" value="3" class="small-button">➕3</button>
+                                <button name="delta" value="-1" class="secondary small-button">➖1</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="period-block">
+                        <div class="period"><?= $game['status'] === 'ended' ? 'Spielende' : e(period_label((int)$game['period'])) ?></div>
+                        <div class="button-row">
+                            <form method="post" class="inline">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="end_quarter">
+                                <button type="submit" class="small-button">⏭ Viertel beenden</button>
+                            </form>
+                            <form method="post" class="inline" onsubmit="return confirm('Letztes Viertel löschen?');">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="delete_last_quarter">
+                                <button type="submit" class="secondary small-button">↩ Letztes Viertel löschen</button>
+                            </form>
+                            <form method="post" class="inline" onsubmit="return confirm('Spiel wirklich beenden?');">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="action" value="end_game">
+                                <button type="submit" class="danger small-button">🛑 Spiel beenden</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="period-block">
-                <div class="period"><?= $game['status'] === 'ended' ? 'Spielende' : e(period_label((int)$game['period'])) ?></div>
-                <div class="button-row">
-                    <form method="post" class="inline">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="action" value="end_quarter">
-                        <button type="submit" class="small-button">⏭ Viertel beenden</button>
-                    </form>
-                    <form method="post" class="inline" onsubmit="return confirm('Letztes Viertel löschen?');">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="action" value="delete_last_quarter">
-                        <button type="submit" class="secondary small-button">↩ Letztes Viertel löschen</button>
-                    </form>
-                    <form method="post" class="inline" onsubmit="return confirm('Spiel wirklich beenden?');">
-                        <?= csrf_field() ?>
-                        <input type="hidden" name="action" value="end_game">
-                        <button type="submit" class="danger small-button">🛑 Spiel beenden</button>
-                    </form>
+                <div class="foul-side">
+                    <h3><?= e($game['team_away']) ?></h3>
+                    <ul class="foul-control-list">
+                        <?php foreach ($awayPlayers as $player): ?>
+                            <li class="<?= (int)$player['fouls'] >= (int)$config['MAX_FOULS'] ? 'foul-out' : '' ?>">
+                                <span class="foul-player"><?= e((string)$player['number']) ?> <?= e($player['name']) ?></span>
+                                <form method="post" class="foul-buttons">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="action" value="foul_adjust">
+                                    <input type="hidden" name="player_id" value="<?= (int)$player['id'] ?>">
+                                    <button name="delta" value="1" class="small-button">➕</button>
+                                    <button name="delta" value="-1" class="secondary small-button">➖</button>
+                                </form>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
             </div>
         </section>
@@ -327,45 +365,33 @@ foreach ($history as $entry) {
 
         <section class="card">
             <h2>Teamfouls &amp; Timeouts</h2>
-            <div class="teams-grid compact-grid">
-                <div class="team-panel">
-                    <h3><?= e($game['team_home']) ?></h3>
-                    <div class="stat-duo">
-                        <div class="stat-panel">
-                            <span class="stat-label">Teamfouls</span>
-                            <strong class="stat-value"><?= $teamFoulsHome ?></strong>
-                        </div>
-                        <div class="stat-panel">
-                            <span class="stat-label">Timeouts</span>
-                            <strong class="stat-value"><?= (int)$game['timeouts_home'] ?></strong>
-                            <form method="post" class="button-grid compact">
-                                <?= csrf_field() ?>
-                                <input type="hidden" name="action" value="timeout_adjust">
-                                <input type="hidden" name="team" value="home">
-                                <button name="delta" value="1" class="small-button">➕</button>
-                                <button name="delta" value="-1" class="secondary small-button">➖</button>
-                            </form>
-                        </div>
-                    </div>
+            <div class="center-stat-list">
+                <div class="center-stat-row">
+                    <strong class="center-stat-value"><?= $teamFoulsHome ?></strong>
+                    <span class="center-stat-label">Teamfouls</span>
+                    <strong class="center-stat-value"><?= $teamFoulsAway ?></strong>
                 </div>
-                <div class="team-panel">
-                    <h3><?= e($game['team_away']) ?></h3>
-                    <div class="stat-duo">
-                        <div class="stat-panel">
-                            <span class="stat-label">Teamfouls</span>
-                            <strong class="stat-value"><?= $teamFoulsAway ?></strong>
-                        </div>
-                        <div class="stat-panel">
-                            <span class="stat-label">Timeouts</span>
-                            <strong class="stat-value"><?= (int)$game['timeouts_away'] ?></strong>
-                            <form method="post" class="button-grid compact">
-                                <?= csrf_field() ?>
-                                <input type="hidden" name="action" value="timeout_adjust">
-                                <input type="hidden" name="team" value="away">
-                                <button name="delta" value="1" class="small-button">➕</button>
-                                <button name="delta" value="-1" class="secondary small-button">➖</button>
-                            </form>
-                        </div>
+                <div class="center-stat-row">
+                    <div class="center-stat-side">
+                        <strong class="center-stat-value"><?= (int)$game['timeouts_home'] ?></strong>
+                        <form method="post" class="button-grid compact center-stat-buttons">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="action" value="timeout_adjust">
+                            <input type="hidden" name="team" value="home">
+                            <button name="delta" value="1" class="small-button">➕</button>
+                            <button name="delta" value="-1" class="secondary small-button">➖</button>
+                        </form>
+                    </div>
+                    <span class="center-stat-label">Timeouts</span>
+                    <div class="center-stat-side">
+                        <strong class="center-stat-value"><?= (int)$game['timeouts_away'] ?></strong>
+                        <form method="post" class="button-grid compact center-stat-buttons">
+                            <?= csrf_field() ?>
+                            <input type="hidden" name="action" value="timeout_adjust">
+                            <input type="hidden" name="team" value="away">
+                            <button name="delta" value="1" class="small-button">➕</button>
+                            <button name="delta" value="-1" class="secondary small-button">➖</button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -390,7 +416,12 @@ foreach ($history as $entry) {
         </section>
 
         <section class="card">
-            <h2>Spieler & Fouls</h2>
+            <h2>Steuer-Passwort</h2>
+            <p><strong><?= e((string)($game['control_password_plain'] ?? '')) ?></strong></p>
+        </section>
+
+        <section class="card">
+            <h2>Spieler bearbeiten</h2>
             <div class="teams-grid">
                 <div>
                     <h3><?= e($game['team_home']) ?></h3>
@@ -399,7 +430,6 @@ foreach ($history as $entry) {
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Fouls</th>
                                 <th>Aktionen</th>
                             </tr>
                         </thead>
@@ -413,20 +443,12 @@ foreach ($history as $entry) {
                                     <td>
                                         <input type="text" name="name" value="<?= e($player['name']) ?>" maxlength="40" class="wide" form="<?= e($formId) ?>">
                                     </td>
-                                    <td><?= (int)$player['fouls'] ?></td>
                                     <td>
                                         <form method="post" id="<?= e($formId) ?>" class="inline">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="action" value="update_player">
                                             <input type="hidden" name="player_id" value="<?= (int)$player['id'] ?>">
                                             <button type="submit" class="secondary small-button">💾</button>
-                                        </form>
-                                        <form method="post" class="inline">
-                                            <?= csrf_field() ?>
-                                            <input type="hidden" name="action" value="foul_adjust">
-                                            <input type="hidden" name="player_id" value="<?= (int)$player['id'] ?>">
-                                            <button name="delta" value="1" class="small-button">➕</button>
-                                            <button name="delta" value="-1" class="secondary small-button">➖</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -441,7 +463,6 @@ foreach ($history as $entry) {
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
-                                <th>Fouls</th>
                                 <th>Aktionen</th>
                             </tr>
                         </thead>
@@ -455,20 +476,12 @@ foreach ($history as $entry) {
                                     <td>
                                         <input type="text" name="name" value="<?= e($player['name']) ?>" maxlength="40" class="wide" form="<?= e($formId) ?>">
                                     </td>
-                                    <td><?= (int)$player['fouls'] ?></td>
                                     <td>
                                         <form method="post" id="<?= e($formId) ?>" class="inline">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="action" value="update_player">
                                             <input type="hidden" name="player_id" value="<?= (int)$player['id'] ?>">
                                             <button type="submit" class="secondary small-button">💾</button>
-                                        </form>
-                                        <form method="post" class="inline">
-                                            <?= csrf_field() ?>
-                                            <input type="hidden" name="action" value="foul_adjust">
-                                            <input type="hidden" name="player_id" value="<?= (int)$player['id'] ?>">
-                                            <button name="delta" value="1" class="small-button">➕</button>
-                                            <button name="delta" value="-1" class="secondary small-button">➖</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -477,11 +490,6 @@ foreach ($history as $entry) {
                     </table>
                 </div>
             </div>
-        </section>
-
-        <section class="card">
-            <h2>Steuer-Passwort</h2>
-            <p><strong><?= e((string)($game['control_password_plain'] ?? '')) ?></strong></p>
         </section>
     </main>
 </body>
