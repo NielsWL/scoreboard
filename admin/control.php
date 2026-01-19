@@ -270,6 +270,9 @@ for ($period = 1; $period <= $maxPeriod; $period++) {
 <body class="control-page">
     <header class="topbar">
         <h1><?= e($game['title']) ?></h1>
+        <div class="topbar-logo">
+            <img src="/public/logo/Logo_UBC_230px.png" alt="UBC Logo">
+        </div>
         <nav>
             <a href="/admin/dashboard.php">Dashboard</a>
             <a href="/public/view.php?id=<?= (int)$gameId ?>" target="_blank">Public View</a>

@@ -123,6 +123,9 @@ $games = $db->query('SELECT * FROM games ORDER BY created_at DESC')->fetchAll();
 <body>
     <header class="topbar">
         <h1>Basketball Scoreboard</h1>
+        <div class="topbar-logo">
+            <img src="/public/logo/Logo_UBC_230px.png" alt="UBC Logo">
+        </div>
         <nav>
             <a href="/public/index.php" target="_blank">Öffentliche Spiele</a>
             <a href="/admin/logout.php">Logout</a>
