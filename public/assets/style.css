@@ -94,6 +94,13 @@ a {
 .foul-buttons {
     display: flex;
     gap: 0.35rem;
+    align-items: center;
+}
+
+.foul-count {
+    font-weight: 700;
+    min-width: 1.5rem;
+    text-align: right;
 }
 
 .score-block {
@@ -207,6 +214,11 @@ button,
     padding: 0.5rem 1rem;
     cursor: pointer;
     font-size: 0.9rem;
+}
+
+button:not(.secondary):not(.danger),
+.button:not(.secondary):not(.danger) {
+    font-weight: 700;
 }
 
 button.secondary,
@@ -469,6 +481,10 @@ td {
     margin: 1rem auto;
 }
 
+.control-page {
+    font-size: 14px;
+}
+
 .control-page .card {
     padding: 1rem;
 }
@@ -559,6 +575,18 @@ td {
 
 .control-scoreboard {
     margin-bottom: 1.5rem;
+}
+
+.control-page .score-block {
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+}
+
+.team-fouls-warning {
+    background: #fee2e2;
+    color: #991b1b;
+    border-radius: 8px;
+    padding: 0.1rem 0.5rem;
+    display: inline-block;
 }
 
 .view-page .team-stats {

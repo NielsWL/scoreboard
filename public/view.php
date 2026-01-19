@@ -142,9 +142,9 @@ $showSecondHalf = $maxPeriod > 4 || (int)$game['period'] > 4;
                     </div>
                     <div class="team-stats center-stat-list score-stat-list">
                         <div class="center-stat-row">
-                            <strong class="center-stat-value" data-team-fouls-home><?= $teamFoulsHome ?></strong>
+                            <strong class="center-stat-value <?= $teamFoulsHome >= 5 ? 'team-fouls-warning' : '' ?>" data-team-fouls-home><?= $teamFoulsHome ?></strong>
                             <span class="center-stat-label">Teamfouls</span>
-                            <strong class="center-stat-value" data-team-fouls-away><?= $teamFoulsAway ?></strong>
+                            <strong class="center-stat-value <?= $teamFoulsAway >= 5 ? 'team-fouls-warning' : '' ?>" data-team-fouls-away><?= $teamFoulsAway ?></strong>
                         </div>
                         <div class="center-stat-row">
                             <strong class="center-stat-value" data-timeouts-home><?= (int)$game['timeouts_home'] ?></strong>
