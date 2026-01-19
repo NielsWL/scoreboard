@@ -467,3 +467,58 @@ td {
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 720px) {
+    .view-page .topbar {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        text-align: center;
+    }
+
+    .view-page .topbar h1 {
+        font-size: 1.2rem;
+    }
+
+    .view-shell {
+        padding: 0.75rem;
+    }
+
+    .view-grid {
+        gap: 0.75rem;
+    }
+
+    .view-scoreboard .score {
+        font-size: 3rem;
+    }
+
+    .score {
+        font-size: 2.4rem;
+    }
+
+    .period {
+        font-size: 1.5rem;
+    }
+
+    .clock {
+        font-size: 1.2rem;
+    }
+
+    .team-stats {
+        text-align: center;
+    }
+
+    .stat-cell {
+        padding: 0.4rem;
+    }
+
+    .half-row {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .player-list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
