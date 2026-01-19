@@ -364,7 +364,6 @@ td {
 
 .view-side-home {
     grid-area: home;
-    font-size: 3rem;
 }
 
 .view-center {
@@ -454,6 +453,7 @@ td {
 
 .view-side h2 {
     margin-top: 0;
+    font_size: 3rem;
 }
 
 .player-list li {
