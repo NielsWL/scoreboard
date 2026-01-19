@@ -147,7 +147,7 @@ a {
 }
 
 .button-grid.compact {
-    grid-template-columns: repeat(2, minmax(60px, 1fr));
+    grid-template-columns: repeat(1, minmax(60px, 1fr));
     gap: 0.4rem;
 }
 
